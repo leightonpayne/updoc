@@ -13,7 +13,7 @@ make_package <- function(path = tempfile("package ")) {
   ), file.path(path, "DESCRIPTION"))
   writeLines("export(hello)", file.path(path, "NAMESPACE"))
   writeLines("hello <- function() 'hello'", file.path(path, "R", "hello.R"))
-  normalizePath(path)
+  normalizePath(path, winslash = "/")
 }
 
 wait_until <- function(predicate, timeout = 20) {

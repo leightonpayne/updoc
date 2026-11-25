@@ -258,7 +258,7 @@ test_that("preview HTML hydrates status and styles without more requests", {
   app <- preview_app(state)
   asset <- app$call(list(PATH_INFO = "/__updoc__/doc.js", REQUEST_METHOD = "GET"))
   expect_identical(asset$status, 200L)
-  expect_identical(rawToChar(asset$body), paste0(
+  expect_identical(gsub("\r\n", "\n", rawToChar(asset$body), fixed = TRUE), paste0(
     preview_asset_text("doc.js", "mascot"), "\n"
   ))
   css <- app$call(list(PATH_INFO = "/__updoc__/panel.css", REQUEST_METHOD = "GET"))

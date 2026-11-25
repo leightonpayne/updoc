@@ -70,21 +70,21 @@ prepare_initial_preview <- function(root, source_site, target) {
 }
 
 relative_to_root <- function(path, root) {
-  path <- fs::path_abs(path)
-  root <- fs::path_abs(root)
-  prefix <- paste0(root, .Platform$file.sep)
+  path <- as.character(fs::path_norm(fs::path_abs(path)))
+  root <- as.character(fs::path_norm(fs::path_abs(root)))
+  prefix <- paste0(root, "/")
   if (identical(path, root)) return("")
   if (!startsWith(path, prefix)) return(path)
   substring(path, nchar(prefix) + 1L)
 }
 
 is_excluded_path <- function(path, root, site_dir = NULL) {
-  absolute <- fs::path_abs(path, start = root)
+  absolute <- as.character(fs::path_norm(fs::path_abs(path, start = root)))
   rel <- gsub("\\\\", "/", relative_to_root(absolute, root))
   if (!is.null(site_dir)) {
-    site_abs <- fs::path_abs(site_dir)
+    site_abs <- as.character(fs::path_norm(fs::path_abs(site_dir)))
     if (identical(absolute, site_abs) ||
-        startsWith(absolute, paste0(site_abs, .Platform$file.sep))) return(TRUE)
+        startsWith(absolute, paste0(site_abs, "/"))) return(TRUE)
   }
   parts <- strsplit(rel, "/", fixed = TRUE)[[1L]]
   excluded_dir <- parts %in% c(".git", ".Rproj.user", "packrat", ".cache",
@@ -195,11 +195,14 @@ mirror_package <- function(root, destination, site_dir = NULL) {
 }
 
 sync_package_changes <- function(root, mirror, changed) {
+  root_abs <- as.character(fs::path_norm(fs::path_abs(root)))
+  prefix <- paste0(root_abs, "/")
   changed <- unique(as.character(changed))
   for (source in changed) {
-    relative <- relative_to_root(source, root)
+    relative <- relative_to_root(source, root_abs)
+    source_abs <- as.character(fs::path_norm(fs::path_abs(source)))
     if (!nzchar(relative) || startsWith(relative, "<") ||
-        !startsWith(fs::path_abs(source), paste0(root, .Platform$file.sep))) {
+        !startsWith(source_abs, prefix)) {
       next
     }
     target <- fs::path(mirror, relative)

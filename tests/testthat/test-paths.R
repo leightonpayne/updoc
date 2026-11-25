@@ -116,9 +116,12 @@ test_that("preview builds refuse destinations outside their work directory", {
 test_that("preview output rejects symlink roots and ancestors", {
   root <- make_package()
   work <- tempfile("preview-output-links-")
-  on.exit(unlink(c(root, work), recursive = TRUE), add = TRUE)
-  external <- file.path(work, "external")
   destination <- file.path(work, "output")
+  on.exit({
+    if (fs::is_link(destination)) try(fs::link_delete(destination), silent = TRUE)
+    unlink(c(root, work), recursive = TRUE)
+  }, add = TRUE)
+  external <- file.path(work, "external")
   fs::dir_create(c(external, destination))
   sentinel <- file.path(external, "keep.txt")
   writeLines("Keep this external file unchanged.", sentinel)

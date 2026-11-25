@@ -305,9 +305,9 @@ safe_site_file <- function(site_dir, request_path) {
   candidate <- fs::path(site_dir, decoded)
   if (fs::dir_exists(candidate)) candidate <- fs::path(candidate, "index.html")
   if (!fs::file_exists(candidate)) return(NULL)
-  actual <- fs::path_real(candidate)
-  root <- fs::path_real(site_dir)
-  if (!startsWith(actual, paste0(root, .Platform$file.sep))) return(NULL)
+  actual <- as.character(fs::path_real(candidate))
+  root <- as.character(fs::path_real(site_dir))
+  if (!startsWith(actual, paste0(root, "/"))) return(NULL)
   actual
 }
 

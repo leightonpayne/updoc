@@ -77,7 +77,7 @@ jobs:
         with:
           extra-packages: |
             any::rcmdcheck
-            ${{ matrix.config.minimum && 'pkgdown@2.2.0, mirai@2.0.0' || '' }}
+            ${{ matrix.config.minimum && 'pkgdown@2.2.0, mirai@2.0.0, nanonext@1.4.0' || '' }}
           needs: check
       - name: Verify minimum dependency versions
         if: matrix.config.minimum
