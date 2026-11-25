@@ -15,6 +15,15 @@ Start with \code{\link[=serve]{serve()}} for a simple blocking session, use \cod
 your R console free, run \code{\link[=check]{check()}} for a one-shot non-destructive build
 check, and run \code{\link[=build]{build()}} when you are ready to build the site for publishing.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://updoc.leightonpayne.dev}
+  \item \url{https://github.com/leightonpayne/updoc}
+  \item Report bugs at \url{https://github.com/leightonpayne/updoc/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Leighton Payne \email{leightonpayne98@gmail.com} [copyright holder]
 

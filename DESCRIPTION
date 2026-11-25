@@ -21,6 +21,8 @@ Description: Serves live previews of 'pkgdown' sites while you edit your
     your source package untouched while previewing.
 License: MIT + file LICENSE
 Copyright: See file inst/COPYRIGHTS.
+URL: https://updoc.leightonpayne.dev, https://github.com/leightonpayne/updoc
+BugReports: https://github.com/leightonpayne/updoc/issues
 Depends: R (>= 4.1.0)
 Imports:
     callr,
