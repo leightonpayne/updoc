@@ -25,11 +25,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Leighton Payne \email{leightonpayne98@gmail.com} [copyright holder]
+\strong{Maintainer}: Leighton Payne \email{leightonpayne98@gmail.com} (\href{https://orcid.org/0000-0003-2305-6827}{ORCID}) [copyright holder]
 
 Authors:
 \itemize{
-  \item Leighton Payne \email{leightonpayne98@gmail.com} [copyright holder]
+  \item Leighton Payne \email{leightonpayne98@gmail.com} (\href{https://orcid.org/0000-0003-2305-6827}{ORCID}) [copyright holder]
 }
 
 Other contributors:
