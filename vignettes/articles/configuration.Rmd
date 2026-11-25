@@ -1,0 +1,163 @@
+---
+title: "Configure the preview"
+description: "Tune rebuild behavior, popup appearance, Pandoc, and other preview options."
+output: rmarkdown::html_document
+---
+
+The defaults work well for most packages, so you can usually just run
+`updoc::serve()`. When you want to tweak how rebuilds work or how the preview
+looks, every option below works with both [`serve()`](../reference/serve.html)
+and [`preview()`](../reference/preview.html).
+
+## Rebuilding
+
+Use `strategy` to choose how updoc responds when you save a file:
+
+- `"smart"` *(default)*: rebuilds only the pages affected by your edit (a single
+  article, changed reference pages, `NEWS.md`, or site CSS), and falls back to a
+  full build for broader changes like `_pkgdown.yml`, `DESCRIPTION`, R code
+  edits, or deleted files.
+- `"lazy"`: runs pkgdown's lazy build, skipping reference pages and articles
+  whose output is already newer than their source files.
+- `"full"`: rebuilds the whole site on every save. Slower, but handy when
+  debugging cross-page links or site-wide layout changes.
+
+```r
+updoc::serve(strategy = "full")
+```
+
+When you edit files in `R/`, updoc runs roxygen2 in its temporary preview copy
+so reference pages stay current. If you maintain `man/` files yourself (or don't
+use roxygen2), turn that off:
+
+```r
+updoc::serve(document = FALSE)
+```
+
+Even with `document = FALSE`, updoc still checks your R files for syntax errors
+and renders `README.Rmd` if you edit it.
+
+## Pandoc
+
+updoc uses whichever Pandoc installation rmarkdown finds (2.10.1 or newer). To
+point it at another copy, pass the folder containing the `pandoc` binary (not
+the binary itself):
+
+```r
+updoc::serve(pandoc = "/path/to/pandoc/bin")
+```
+
+To make that your default for `serve()`, `preview()`, and `build()`, add it to
+your session or `.Rprofile`:
+
+```r
+options(updoc.pandoc = "/path/to/pandoc/bin")
+```
+
+Passing `pandoc` directly always overrides the option. updoc never downloads
+Pandoc automatically or changes your system installation.
+
+## Build output and logs
+
+Full, unfiltered output from your latest build is always saved to a temporary
+log file (even when `quiet = TRUE`), and stays available for the rest of your R
+session:
+
+- After `site <- updoc::preview()`, find the file at `site$status()$build_log`.
+- After `result <- updoc::build()`, find it at `result$build_log` (or on the
+  error object's `$build_log` if the build failed).
+
+To keep your console clean, updoc hides two harmless Pandoc 3.11 deprecation
+warnings (`--mathml` and `--mathjax`) from normal output while still writing
+them to the log. All other warnings and errors appear as usual.
+
+## Popup appearance
+
+Use `theme` to control how the in-browser status popup looks:
+
+| Value | Appearance |
+| --- | --- |
+| `"auto"` | Matches the site's light or dark theme, falling back to your system preference |
+| `"inverse"` | The opposite of `"auto"` (dark popup on a light site, light on dark) |
+| `"light"` | Always light |
+| `"dark"` | Always dark |
+
+Set it for a single session with `updoc::serve(theme = "dark")`, or set a
+personal default in your `.Rprofile`:
+
+```r
+options(updoc.theme = "inverse")
+```
+
+An explicit `theme` argument always takes priority; with neither set, updoc uses
+`"auto"`.
+
+## Other options
+
+| Option | What it does |
+| --- | --- |
+| `pkg = "path/to/package"` | Preview another package (any folder or file inside it works); defaults to `"."` |
+| `browse = FALSE` | Start the server without opening a browser tab |
+| `port = 4567` | Request a specific local port (`0` picks any free port); defaults to `4321` |
+| `quiet = TRUE` | Hide detailed pkgdown output while keeping progress, warnings, and errors |
+
+If your requested port is already in use (or you pass `port = 0`), updoc picks
+a free local port and prints the URL it chose. The preview server only listens
+locally on `127.0.0.1`.
+
+## Automation and AI agents
+
+updoc works cleanly from scripts, CI jobs, and AI coding agents without needing
+an interactive R session or browser window.
+
+### One-shot checks
+
+Use [`check()`](../reference/check.html) to verify a package's site in a
+temporary copy without touching `man/`, `README.md`, or `docs/`:
+
+```sh
+Rscript -e 'updoc::check(format = "json")'
+```
+
+It prints one JSON object to standard output (`ok`, `package_root`, `duration`,
+`warnings`, `error`, and `build_log`) and exits with a non-zero status on
+failure. Pass `error = FALSE` if you want to inspect the JSON result without an
+error exit.
+
+### Driving a live preview over HTTP
+
+If an agent or tool keeps a preview server running in the background (use
+`port = 0` to avoid collisions across parallel runs):
+
+```sh
+Rscript -e 'updoc::serve(port = 0, browse = FALSE, quiet = TRUE)'
+```
+
+The preview server exposes three local control endpoints on `127.0.0.1`:
+
+- `GET /__updoc__/status` returns the current build status as JSON, including
+  `phase` (`"ready"`, `"building"`, `"error"`), `url`, `rebuild_count`,
+  `last_success`, `changed`, `warnings`, `error`, and `build_log`.
+- `GET /__updoc__/status?wait=1&timeout=60` checks for any newly saved edits,
+  waits until the build settles (or `timeout` seconds pass, up to 300), and
+  returns the settled JSON status. Add `&after=<rebuild_count>` to wait for a
+  newer build.
+- `GET /__updoc__/log` returns the full unfiltered text of the latest build log
+  (or `404` before the first build starts).
+- `POST /__updoc__/rebuild` (with header `X-Updoc-Request: rebuild`) triggers a
+  rebuild; add `?full=true` to force a full site rebuild.
+
+In an R script holding a preview handle, `site$wait(timeout = 60)` provides the
+same wait-until-settled behavior directly.
+
+### Bundled agent skill
+
+updoc ships a ready-to-use `SKILL.md` for AI agents inside the installed
+package:
+
+```r
+system.file("skills", "updoc", "SKILL.md", package = "updoc")
+```
+
+See the [`serve()` reference](../reference/serve.html) for the full list of
+arguments and defaults.

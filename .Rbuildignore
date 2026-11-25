@@ -1,0 +1,15 @@
+^updoc\.Rproj$
+^\.Rproj\.user$
+^\.github$
+^AGENTS\.md$
+^docs$
+^README\.Rmd$
+^_pkgdown\.yml$
+^cran-comments\.md$
+^tools$
+^artifacts$
+^.*\.Rcheck$
+^.*\.tar\.gz$
+^pkgdown$
+^vignettes/articles$
+^LICENSE\.md$

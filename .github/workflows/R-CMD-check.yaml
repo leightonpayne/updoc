@@ -1,0 +1,102 @@
+name: R CMD check
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser:
+    name: Browser behavior and generated assets
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Run browser regression tests
+        run: node --test tests/browser/*.test.cjs
+      - name: Check generated mascot assets
+        run: node tools/generate-doc-assets.cjs --check
+      - name: Check preview rendering in Chromium
+        run: |
+          npm install --prefix "$RUNNER_TEMP/doc-render-check" --no-save --package-lock=false playwright@1.64.1
+          "$RUNNER_TEMP/doc-render-check/node_modules/.bin/playwright" install --with-deps chromium
+          export NODE_PATH="$RUNNER_TEMP/doc-render-check/node_modules"
+          export CHROME_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
+          node tools/doc/check-rendering.cjs
+
+  check:
+    name: ${{ matrix.config.os }} (R ${{ matrix.config.r }}, Pandoc ${{ matrix.config.pandoc || '3.10.2' }})
+    runs-on: ${{ matrix.config.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: ubuntu-latest, r: 'release', integration: 'true'}
+          - {os: ubuntu-latest, r: 'release', pandoc: '3.11', integration: 'true'}
+          - {os: macos-latest, r: 'release', integration: 'true'}
+          - {os: windows-latest, r: 'release', integration: 'true'}
+          - {os: ubuntu-22.04, r: '4.1.0', pandoc: '2.10.1', integration: 'true', minimum: true}
+          - {os: ubuntu-latest, r: 'oldrel-1'}
+          - {os: ubuntu-latest, r: 'devel', http-user-agent: 'release'}
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: 'yes'
+      UPDOC_INTEGRATION_TESTS: ${{ matrix.config.integration || 'false' }}
+      EXPECTED_PANDOC: ${{ matrix.config.pandoc || '3.10.2' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - uses: r-lib/actions/setup-pandoc@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2
+        with:
+          pandoc-version: ${{ matrix.config.pandoc || '3.10.2' }}
+      - uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2
+        with:
+          r-version: ${{ matrix.config.r }}
+          http-user-agent: ${{ matrix.config.http-user-agent }}
+      - uses: r-lib/actions/setup-r-dependencies@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2
+        with:
+          extra-packages: |
+            any::rcmdcheck
+            ${{ matrix.config.minimum && 'pkgdown@2.2.0, mirai@2.0.0' || '' }}
+          needs: check
+      - name: Verify minimum dependency versions
+        if: matrix.config.minimum
+        shell: Rscript {0}
+        run: |
+          stopifnot(
+            getRversion() == numeric_version("4.1.0"),
+            packageVersion("pkgdown") == numeric_version("2.2.0"),
+            packageVersion("mirai") == numeric_version("2.0.0")
+          )
+      - name: Verify the Pandoc version selected by R
+        shell: Rscript {0}
+        run: |
+          pandoc <- rmarkdown::find_pandoc(cache = FALSE)
+          stopifnot(pandoc$version == numeric_version(Sys.getenv("EXPECTED_PANDOC")))
+          message("Using Pandoc ", pandoc$version, " from ", pandoc$dir)
+      - uses: r-lib/actions/check-r-package@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2
+        with:
+          args: 'c("--no-manual", "--as-cran")'
+          build_args: '"--no-manual"'
+          error-on: '"warning"'
+          upload-results: 'true'

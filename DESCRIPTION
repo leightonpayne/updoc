@@ -1,0 +1,44 @@
+Package: updoc
+Title: Live Preview Server for 'pkgdown' Sites
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Leighton", "Payne",
+      email = "leightonpayne98@gmail.com",
+      role = c("aut", "cre", "cph")
+    ),
+    person("shadcn", role = c("ctb", "cph"),
+      comment = "Adapted preview interface patterns and design tokens"),
+    person("Lucide Icons and Contributors", role = c("ctb", "cph"),
+      comment = "Preview icons"),
+    person("Cole", "Bemis", role = c("ctb", "cph"),
+      comment = "Feather-derived preview icon")
+  )
+Description: Serves live previews of 'pkgdown' sites while you edit your
+    package. Watches for saved changes, rebuilds affected pages, refreshes the
+    browser, and displays build progress, warnings, and errors. Keeps the last
+    working preview available if a build fails, and leaves generated files in
+    your source package untouched while previewing.
+License: MIT + file LICENSE
+Copyright: See file inst/COPYRIGHTS.
+Depends: R (>= 4.1.0)
+Imports:
+    callr,
+    cli (>= 3.6.0),
+    fs,
+    httpuv,
+    jsonlite,
+    later,
+    mirai (>= 2.0.0),
+    pkgdown (>= 2.2.0),
+    promises,
+    rmarkdown,
+    roxygen2
+Suggests:
+    pkgload,
+    testthat (>= 3.1.7)
+Config/testthat/edition: 3
+SystemRequirements: pandoc (>= 2.10.1)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Config/roxygen2/version: 8.1.0

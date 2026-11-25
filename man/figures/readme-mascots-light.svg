@@ -1,0 +1,208 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="224" height="80" viewBox="0 0 224 80" role="img" aria-label="Doc in ready, warning, and error states">
+<style><![CDATA[
+/* Hosts set --doc-size and palette tokens. Scope artwork rules to .doc-mascot
+ * so standalone SVG exports retain their presentation attributes. */
+/* BEGIN GENERATED DOC DEFAULT PALETTE */
+.doc-mascot {
+  --doc-default-fill: oklch(.145 0 0);
+  --doc-default-ink: oklch(1 0 0);
+  --doc-default-warning: oklch(.852 .199 91.936);
+  --doc-default-error: oklch(.577 .245 27.325);
+}
+/* END GENERATED DOC DEFAULT PALETTE */
+.doc-mascot {
+  --doc-color: var(--doc-fill, var(--doc-default-fill));
+  --doc-eye-color: var(--doc-ink, var(--doc-default-ink));
+  display: inline-block;
+  width: var(--doc-size, 44px);
+  height: var(--doc-size, 44px);
+  line-height: 0;
+  vertical-align: middle;
+  pointer-events: none;
+}
+.doc-mascot svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.doc-mascot .doc-face { fill: var(--doc-color); transition: fill .2s ease; }
+.doc-mascot[data-state="error"] { --doc-color: var(--doc-error, var(--doc-default-error)); }
+.doc-mascot[data-state="warning"] {
+  --doc-color: var(--doc-warning, var(--doc-default-warning));
+  --doc-eye-color: var(--doc-warning-ink, var(--doc-ink, var(--doc-default-ink)));
+}
+.doc-mascot .doc-body {
+  transform-origin: 24px 24px;
+  transform: var(--doc-body-pose, none);
+  animation: doc-float 4.8s ease-in-out infinite;
+}
+.doc-mascot .doc-celebration { transform-origin: 24px 28px; }
+.doc-mascot .doc-gaze {
+  transform: translate(var(--doc-look-x, 0px), var(--doc-look-y, 0px));
+}
+.doc-mascot .doc-idle { animation: doc-look var(--doc-idle-duration, 11s) ease-in-out infinite; }
+.doc-mascot .doc-eyes {
+  transform-origin: 24px 24px;
+  animation: doc-blink var(--doc-blink-duration, 14s) ease-in-out infinite;
+  animation-delay: var(--doc-blink-delay, 0s);
+}
+.doc-mascot .doc-eye {
+  transform: var(--doc-eye-pose, none);
+  opacity: var(--doc-eye-opacity, 1);
+  transition: transform .3s ease, opacity .3s ease;
+}
+.doc-mascot .doc-eye--left { transform-origin: 18.25px 24px; }
+.doc-mascot .doc-eye--right { transform-origin: 29.75px 24px; }
+/* BEGIN GENERATED DOC POSES */
+.doc-mascot[data-state="ready"] { --doc-body-pose: translate(0px, 0px) rotate(0deg); }
+.doc-mascot[data-state="ready"] .doc-eye--left { --doc-eye-pose: translateY(0px) scale(1, 1); --doc-eye-opacity: 1; }
+.doc-mascot[data-state="ready"] .doc-eye--right { --doc-eye-pose: translateY(0px) scale(1, 1); --doc-eye-opacity: 1; }
+.doc-mascot[data-state="building"] { --doc-body-pose: translate(0px, 0px) rotate(0deg); }
+.doc-mascot[data-state="building"] .doc-eye--left { --doc-eye-pose: translateY(0px) scale(1.45, 0.36); --doc-eye-opacity: 1; }
+.doc-mascot[data-state="building"] .doc-eye--right { --doc-eye-pose: translateY(0px) scale(1.45, 0.36); --doc-eye-opacity: 1; }
+.doc-mascot[data-state="warning"] { --doc-body-pose: translate(0px, -1px) rotate(10deg); }
+.doc-mascot[data-state="warning"] .doc-eye--left { --doc-eye-pose: translateY(0.75px) scale(1.25, 0.55); --doc-eye-opacity: 1; }
+.doc-mascot[data-state="warning"] .doc-eye--right { --doc-eye-pose: translateY(-1.5px) scale(1.08, 1.2); --doc-eye-opacity: 1; }
+.doc-mascot[data-state="error"] { --doc-body-pose: translate(0px, 0px) rotate(0deg); }
+.doc-mascot[data-state="error"] .doc-eye--left { --doc-eye-pose: translateY(0px) scale(1, 1); --doc-eye-opacity: 1; }
+.doc-mascot[data-state="error"] .doc-eye--right { --doc-eye-pose: translateY(0px) scale(1, 1); --doc-eye-opacity: 1; }
+.doc-mascot[data-state="disconnected"] { --doc-body-pose: translate(0px, 2px) rotate(-10deg); }
+.doc-mascot[data-state="disconnected"] .doc-eye--left { --doc-eye-pose: translateY(2px) scale(1, 1); --doc-eye-opacity: 0.72; }
+.doc-mascot[data-state="disconnected"] .doc-eye--right { --doc-eye-pose: translateY(2px) scale(1, 1); --doc-eye-opacity: 0.72; }
+/* END GENERATED DOC POSES */
+.doc-mascot .doc-eye-open,
+.doc-mascot .doc-eye-cross,
+.doc-mascot .doc-eye-happy,
+.doc-mascot .doc-eye-sleep {
+  transition: opacity .2s ease, fill .2s ease, stroke .2s ease;
+}
+.doc-mascot .doc-eye-open { fill: var(--doc-eye-color); }
+.doc-mascot .doc-eye-cross,
+.doc-mascot .doc-eye-happy,
+.doc-mascot .doc-eye-sleep {
+  opacity: 0;
+  fill: none;
+  stroke: var(--doc-eye-color);
+  stroke-width: 2.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.doc-mascot[data-state="building"] .doc-body { animation: doc-working 1.4s ease-in-out infinite; }
+.doc-mascot[data-state="building"] .doc-idle { animation: doc-scan 2.8s ease-in-out infinite; }
+.doc-mascot[data-state="building"] .doc-eyes { animation-duration: calc(var(--doc-blink-duration, 14s) * .8); }
+.doc-mascot[data-state="building"] .doc-eye {
+  animation: doc-focus 2.8s ease-in-out infinite;
+}
+.doc-mascot[data-state="warning"] .doc-body {
+  animation: doc-attention 4.6s ease-in-out infinite;
+}
+.doc-mascot[data-state="warning"] .doc-idle { animation: doc-warning-look 4.6s ease-in-out infinite; }
+.doc-mascot[data-state="warning"] .doc-eyes { animation-duration: calc(var(--doc-blink-duration, 14s) * .95); }
+.doc-mascot[data-state="error"] .doc-body { animation: doc-shake 4.8s ease-in-out infinite; }
+.doc-mascot[data-state="error"] .doc-idle,
+.doc-mascot[data-state="error"] .doc-eyes { animation: none; }
+.doc-mascot[data-state="error"] .doc-eye-open,
+.doc-mascot[data-state="disconnected"] .doc-eye-open { opacity: 0; }
+.doc-mascot[data-state="error"] .doc-eye-cross,
+.doc-mascot[data-state="disconnected"] .doc-eye-sleep { opacity: 1; }
+.doc-mascot[data-state="disconnected"] .doc-body {
+  animation: doc-sleepy 6.8s ease-in-out infinite;
+}
+.doc-mascot[data-state="disconnected"] .doc-idle,
+.doc-mascot[data-state="disconnected"] .doc-eyes { animation: none; }
+.doc-mascot[data-state="ready"] .doc-body,
+.doc-mascot[data-state="disconnected"] .doc-body { animation-delay: var(--doc-body-delay, 0s); }
+.doc-mascot[data-state="ready"] .doc-idle { animation-delay: var(--doc-idle-delay, 0s); }
+.doc-mascot.doc-mascot--decorative .doc-idle {
+  animation: doc-curious-look calc(var(--doc-idle-duration, 11s) * .75) ease-in-out infinite;
+  animation-delay: var(--doc-idle-delay, 0s);
+}
+.doc-mascot[data-celebrating="true"] .doc-celebration { animation: doc-celebrate 1.05s ease-in-out both; }
+.doc-mascot[data-celebrating="true"] .doc-body { animation-play-state: paused; }
+.doc-mascot[data-celebrating="true"] .doc-eyes { animation: none; }
+.doc-mascot[data-celebrating="true"] .doc-eye-open,
+.doc-mascot[data-celebrating="true"] .doc-eye-cross,
+.doc-mascot[data-celebrating="true"] .doc-eye-sleep { opacity: 0; }
+.doc-mascot[data-celebrating="true"] .doc-eye-happy { opacity: 1; }
+
+@keyframes doc-float {
+  0%, 100% { transform: translateY(1px) rotate(-2deg); }
+  50% { transform: translateY(-1.5px) rotate(2deg); }
+}
+@keyframes doc-celebrate {
+  0%, 100% { transform: translateY(0) rotate(0) scale(1); }
+  12% { transform: translateY(1px) rotate(-3deg) scale(1.06, .92); }
+  32% { transform: translateY(-6px) rotate(-10deg) scale(.98, 1.04); }
+  49% { transform: translateY(1px) rotate(0) scale(1.07, .93); }
+  68% { transform: translateY(-4px) rotate(8deg) scale(.99, 1.03); }
+  84% { transform: translateY(.5px) rotate(-2deg) scale(1.03, .98); }
+}
+@keyframes doc-look {
+  0%, 18%, 34.5%, 58%, 86.5%, 100% { transform: translate(0, 0); }
+  19.5%, 33% { transform: translate(calc(1.5px * var(--doc-idle-weight, 1)), calc(-.6px * var(--doc-idle-weight, 1))); }
+  59.5%, 73% { transform: translate(calc(-1.1px * var(--doc-idle-weight, 1)), calc(.5px * var(--doc-idle-weight, 1))); }
+  74.5%, 85% { transform: translate(calc(-.5px * var(--doc-idle-weight, 1)), calc(-.7px * var(--doc-idle-weight, 1))); }
+}
+@keyframes doc-curious-look {
+  0%, 10%, 28%, 37%, 70%, 79%, 96%, 100% { transform: translate(0, 0); }
+  12%, 26% { transform: translate(calc(2.6px * var(--doc-idle-weight, 1)), calc(-1.2px * var(--doc-idle-weight, 1))); }
+  39%, 55% { transform: translate(calc(-2.4px * var(--doc-idle-weight, 1)), calc(.8px * var(--doc-idle-weight, 1))); }
+  57%, 68% { transform: translate(calc(-.6px * var(--doc-idle-weight, 1)), calc(-1.5px * var(--doc-idle-weight, 1))); }
+  81%, 94% { transform: translate(calc(1.8px * var(--doc-idle-weight, 1)), calc(.7px * var(--doc-idle-weight, 1))); }
+}
+@keyframes doc-blink {
+  0%, 11%, 12.5%, 37%, 38.5%, 40%, 41.5%, 73%, 74.5%, 100% { transform: scaleY(1); }
+  11.75%, 37.75%, 40.75%, 73.75% { transform: scaleY(.12); }
+}
+@keyframes doc-working {
+  0%, 100% { transform: translateY(1.5px) rotate(-7deg); }
+  25%, 75% { transform: translateY(-3.5px) rotate(0); }
+  50% { transform: translateY(1.5px) rotate(7deg); }
+}
+@keyframes doc-scan {
+  0%, 12%, 100% { transform: translate(calc(-2px * var(--doc-idle-weight, 1)), calc(.3px * var(--doc-idle-weight, 1))); }
+  42%, 58% { transform: translate(calc(2px * var(--doc-idle-weight, 1)), calc(-.6px * var(--doc-idle-weight, 1))); }
+  78%, 88% { transform: translate(0, calc(.8px * var(--doc-idle-weight, 1))); }
+}
+@keyframes doc-focus {
+  0%, 20%, 70%, 100% { transform: var(--doc-eye-pose); }
+  38%, 52% { transform: translateY(.5px) scale(1.45, .26); }
+}
+@keyframes doc-attention {
+  0%, 6%, 38%, 100% { transform: var(--doc-body-pose); }
+  13%, 18% { transform: translateY(-2px) rotate(-7deg); }
+  25%, 30% { transform: translateY(-2px) rotate(14deg); }
+}
+@keyframes doc-warning-look {
+  0%, 6%, 38%, 100% { transform: translate(0, 0); }
+  13%, 18% { transform: translate(calc(-.8px * var(--doc-idle-weight, 1)), calc(-.6px * var(--doc-idle-weight, 1))); }
+  25%, 30% { transform: translate(calc(.8px * var(--doc-idle-weight, 1)), calc(-.6px * var(--doc-idle-weight, 1))); }
+}
+@keyframes doc-shake {
+  0%, 18%, 100% { transform: translate(0, 1px) rotate(0); }
+  3%, 9% { transform: translate(-3px, 0) rotate(-9deg); }
+  6%, 12% { transform: translate(3px, 0) rotate(9deg); }
+  15% { transform: translate(-1px, .5px) rotate(-3deg); }
+}
+@keyframes doc-sleepy {
+  0%, 100% { transform: var(--doc-body-pose); }
+  40%, 60% { transform: translateY(4px) rotate(-16deg); }
+  76%, 86% { transform: translateY(1.5px) rotate(-8deg); }
+}
+
+/* Motion preferences are resolved by the controller. State poses and eye
+ * expressions remain visible; only the moving transform layers are reset. */
+.doc-mascot[data-motion="reduce"],
+.doc-mascot[data-motion="reduce"] * { animation: none !important; transition: none !important; }
+.doc-mascot[data-motion="reduce"] .doc-celebration,
+.doc-mascot[data-motion="reduce"] .doc-gaze,
+.doc-mascot[data-motion="reduce"] .doc-idle,
+.doc-mascot[data-motion="reduce"] .doc-eyes { transform: none !important; }
+
+svg.doc-mascot { overflow: visible; }
+@media (prefers-reduced-motion: reduce) {
+  .doc-mascot, .doc-mascot * { animation: none !important; transition: none !important; }
+  .doc-mascot .doc-celebration, .doc-mascot .doc-gaze,
+  .doc-mascot .doc-idle, .doc-mascot .doc-eyes { transform: none !important; }
+}
+]]></style>
+<svg class="doc-mascot doc-mascot--decorative" data-state="ready" x="8" y="12" style="--doc-size:56px;--doc-color:oklch(.145 0 0);--doc-eye-color:oklch(1 0 0);--doc-blink-duration:15.094s;--doc-blink-delay:-2.259s;--doc-idle-duration:12.494s;--doc-idle-delay:-8.549s;--doc-body-delay:-0.753s" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="56" height="56" fill="none" role="img" aria-label="Doc, ready" focusable="false"><g class="doc-celebration"><g class="doc-body" transform="translate(0 0) rotate(0 24 24)"><path class="doc-face" d="M20 3.8Q24 1.5 28 3.8L39.8 10.6Q43.8 12.9 43.8 17.5V30.5Q43.8 35.1 39.8 37.4L28 44.2Q24 46.5 20 44.2L8.2 37.4Q4.2 35.1 4.2 30.5V17.5Q4.2 12.9 8.2 10.6Z" fill="oklch(.145 0 0)"></path><g class="doc-gaze"><g class="doc-idle"><g class="doc-eyes"><g class="doc-eye doc-eye--left" transform="translate(0 0) translate(18.25 24) scale(1 1) translate(-18.25 -24)" opacity="1"><rect class="doc-eye-open" x="16" y="19.5" width="4.5" height="9" rx="2.25" fill="oklch(1 0 0)" opacity="1"></rect><path class="doc-eye-cross" d="M15 20.75l6.5 6.5m0-6.5-6.5 6.5" fill="none" stroke="oklch(1 0 0)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" opacity="0"></path><path class="doc-eye-sleep" d="M15 24q3.25 2 6.5 0" fill="none" stroke="oklch(1 0 0)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" opacity="0"></path><path class="doc-eye-happy" d="M15 25q3.25-5 6.5 0" fill="none" stroke="oklch(1 0 0)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" opacity="0"></path></g><g class="doc-eye doc-eye--right" transform="translate(0 0) translate(29.75 24) scale(1 1) translate(-29.75 -24)" opacity="1"><rect class="doc-eye-open" x="27.5" y="19.5" width="4.5" height="9" rx="2.25" fill="oklch(1 0 0)" opacity="1"></rect><path class="doc-eye-cross" d="M26.5 20.75l6.5 6.5m0-6.5-6.5 6.5" fill="none" stroke="oklch(1 0 0)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" opacity="0"></path><path class="doc-eye-sleep" d="M26.5 24q3.25 2 6.5 0" fill="none" stroke="oklch(1 0 0)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" opacity="0"></path><path class="doc-eye-happy" d="M26.5 25q3.25-5 6.5 0" fill="none" stroke="oklch(1 0 0)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" opacity="0"></path></g></g></g></g></g></g></svg>
+<svg class="doc-mascot doc-mascot--decorative" data-state="warning" x="84" y="12" style="--doc-size:56px;--doc-color:oklch(.852 .199 91.936);--doc-eye-color:oklch(1 0 0);--doc-blink-duration:13.625s;--doc-blink-delay:-1.129s;--doc-idle-duration:10.612s;--doc-idle-delay:-9.686s;--doc-body-delay:-0.376s" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="56" height="56" fill="none" role="img" aria-label="Doc, warning" focusable="false"><g class="doc-celebration"><g class="doc-body" transform="translate(0 -1) rotate(10 24 24)"><path class="doc-face" d="M20 3.8Q24 1.5 28 3.8L39.8 10.6Q43.8 12.9 43.8 17.5V30.5Q43.8 35.1 39.8 37.4L28 44.2Q24 46.5 20 44.2L8.2 37.4Q4.2 35.1 4.2 30.5V17.5Q4.2 12.9 8.2 10.6Z" fill="oklch(.852 .199 91.936)"></path><g class="doc-gaze"><g class="doc-idle"><g class="doc-eyes"><g class="doc-eye doc-eye--left" transform="translate(0 0.75) translate(18.25 24) scale(1.25 0.55) translate(-18.25 -24)" opacity="1"><rect class="doc-eye-open" x="16" y="19.5" width="4.5" height="9" rx="2.25" fill="oklch(1 0 0)" opacity="1"></rect><path class="doc-eye-cross" d="M15 20.75l6.5 6.5m0-6.5-6.5 6.5" fill="none" stroke="oklch(1 0 0)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" opacity="0"></path><path class="doc-eye-sleep" d="M15 24q3.25 2 6.5 0" fill="none" stroke="oklch(1 0 0)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" opacity="0"></path><path class="doc-eye-happy" d="M15 25q3.25-5 6.5 0" fill="none" stroke="oklch(1 0 0)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" opacity="0"></path></g><g class="doc-eye doc-eye--right" transform="translate(0 -1.5) translate(29.75 24) scale(1.08 1.2) translate(-29.75 -24)" opacity="1"><rect class="doc-eye-open" x="27.5" y="19.5" width="4.5" height="9" rx="2.25" fill="oklch(1 0 0)" opacity="1"></rect><path class="doc-eye-cross" d="M26.5 20.75l6.5 6.5m0-6.5-6.5 6.5" fill="none" stroke="oklch(1 0 0)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" opacity="0"></path><path class="doc-eye-sleep" d="M26.5 24q3.25 2 6.5 0" fill="none" stroke="oklch(1 0 0)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" opacity="0"></path><path class="doc-eye-happy" d="M26.5 25q3.25-5 6.5 0" fill="none" stroke="oklch(1 0 0)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" opacity="0"></path></g></g></g></g></g></g></svg>
+<svg class="doc-mascot doc-mascot--decorative" data-state="error" x="160" y="12" style="--doc-size:56px;--doc-color:oklch(.577 .245 27.325);--doc-eye-color:oklch(1 0 0);--doc-blink-duration:13.927s;--doc-blink-delay:-1.929s;--doc-idle-duration:10.741s;--doc-idle-delay:-8.000s;--doc-body-delay:-0.643s" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="56" height="56" fill="none" role="img" aria-label="Doc, error" focusable="false"><g class="doc-celebration"><g class="doc-body" transform="translate(0 0) rotate(0 24 24)"><path class="doc-face" d="M20 3.8Q24 1.5 28 3.8L39.8 10.6Q43.8 12.9 43.8 17.5V30.5Q43.8 35.1 39.8 37.4L28 44.2Q24 46.5 20 44.2L8.2 37.4Q4.2 35.1 4.2 30.5V17.5Q4.2 12.9 8.2 10.6Z" fill="oklch(.577 .245 27.325)"></path><g class="doc-gaze"><g class="doc-idle"><g class="doc-eyes"><g class="doc-eye doc-eye--left" transform="translate(0 0) translate(18.25 24) scale(1 1) translate(-18.25 -24)" opacity="1"><rect class="doc-eye-open" x="16" y="19.5" width="4.5" height="9" rx="2.25" fill="oklch(1 0 0)" opacity="0"></rect><path class="doc-eye-cross" d="M15 20.75l6.5 6.5m0-6.5-6.5 6.5" fill="none" stroke="oklch(1 0 0)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" opacity="1"></path><path class="doc-eye-sleep" d="M15 24q3.25 2 6.5 0" fill="none" stroke="oklch(1 0 0)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" opacity="0"></path><path class="doc-eye-happy" d="M15 25q3.25-5 6.5 0" fill="none" stroke="oklch(1 0 0)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" opacity="0"></path></g><g class="doc-eye doc-eye--right" transform="translate(0 0) translate(29.75 24) scale(1 1) translate(-29.75 -24)" opacity="1"><rect class="doc-eye-open" x="27.5" y="19.5" width="4.5" height="9" rx="2.25" fill="oklch(1 0 0)" opacity="0"></rect><path class="doc-eye-cross" d="M26.5 20.75l6.5 6.5m0-6.5-6.5 6.5" fill="none" stroke="oklch(1 0 0)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" opacity="1"></path><path class="doc-eye-sleep" d="M26.5 24q3.25 2 6.5 0" fill="none" stroke="oklch(1 0 0)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" opacity="0"></path><path class="doc-eye-happy" d="M26.5 25q3.25-5 6.5 0" fill="none" stroke="oklch(1 0 0)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" opacity="0"></path></g></g></g></g></g></g></svg>
+</svg>

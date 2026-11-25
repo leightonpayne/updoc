@@ -1,0 +1,32 @@
+/* BEGIN GENERATED DOC PALETTE */
+.doc-intro {
+  --doc-fill: oklch(.145 0 0);
+  --doc-ink: oklch(1 0 0);
+  --doc-warning: oklch(.852 .199 91.936);
+  --doc-error: oklch(.577 .245 27.325);
+}
+[data-bs-theme="dark"] .doc-intro {
+  --doc-fill: oklch(.985 0 0);
+  --doc-ink: oklch(.205 0 0);
+  --doc-warning: oklch(.795 .184 86.047);
+  --doc-error: oklch(.704 .191 22.216);
+}
+/* END GENERATED DOC PALETTE */
+.doc-intro {
+  --doc-size: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  margin: 1.5rem 0;
+}
+.doc-intro p { margin: 0; }
+.doc-intro-states { display: flex; flex: none; gap: .75rem; }
+.doc-intro figure { width: 64px; margin: 0; text-align: center; }
+.doc-intro [data-doc-intro-state] { display: block; width: 56px; height: 56px; margin: 0 auto; }
+.doc-intro figcaption { margin-top: .5rem; font-size: .75rem; line-height: 1.4; }
+.doc-intro-warning figcaption { color: var(--doc-warning); }
+.doc-intro-error figcaption { color: var(--doc-error); }
+@media (max-width: 540px) {
+  .doc-intro { flex-direction: column; gap: .75rem; }
+}

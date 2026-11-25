@@ -1,0 +1,28 @@
+Package: flexokidown
+Title: A Flexoki Theme for 'pkgdown'
+Version: 0.1.0
+Authors@R: c(
+    person("Leighton", "Payne", , "leightonpayne98@gmail.com",
+      role = c("aut", "cre", "cph"),
+      comment = c(ORCID = "0000-0003-2305-6827")),
+    person("Steph", "Ango", role = "cph",
+      comment = "Flexoki colour palette")
+  )
+Description: A reusable 'pkgdown' template based on 'Flexoki' by Steph Ango
+    (2023) <https://stephango.com/flexoki>. It provides coordinated light and
+    dark modes, syntax highlighting, and 'Bootstrap' component styles for
+    package documentation.
+License: MIT + file LICENSE
+URL: https://github.com/leightonpayne/flexokidown,
+    https://leightonpayne.github.io/flexokidown/
+BugReports: https://github.com/leightonpayne/flexokidown/issues
+Suggests:
+    knitr,
+    pkgdown (>= 2.2.0),
+    rmarkdown,
+    sass,
+    testthat (>= 3.0.0)
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+Encoding: UTF-8
+Language: en-GB

@@ -1,0 +1,1751 @@
+$flexoki-primary: base !default;
+$flexoki-accent: blue !default;
+$flexoki-navbar-surface: page !default;
+$flexoki-code-surface: raised !default;
+$flexoki-syntax-style: flexoki !default;
+$flexoki-footer-credit: true !default;
+$flexoki-navbar-current-style: accent-background !default;
+$flexoki-navbar-current-weight: normal !default;
+$flexoki-navbar-hover-style: accent-background !default;
+$flexoki-toc-passed-style: faded !default;
+$flexoki-toc-current-style: plain !default;
+$flexoki-toc-current-weight: normal !default;
+$flexoki-toc-hover-style: accent-background !default;
+$flexoki-external-link-icons: false !default;
+$flexoki-code-block-external-link-icons: false !default;
+$flexoki-inline-code-external-link-icons: false !default;
+$flexoki-light-switch-style: dropdown !default;
+$flexoki-content-font-size: 0.9375rem !default;
+$flexoki-content-line-height: 1.8 !default;
+
+// Standalone fallbacks; bslib supplies these variables in pkgdown builds.
+$font-size-base: 0.875rem !default;
+$line-height-base: 1.4 !default;
+$headings-font-weight: 650 !default;
+$font-weight-semibold: 650 !default;
+$border-radius: 0.25rem !default;
+$border-radius-sm: 0.2rem !default;
+$border-radius-lg: 0.35rem !default;
+$enable-shadows: false !default;
+$box-shadow: 0 0.5rem 1rem rgba(16, 15, 15, 0.15) !default;
+$box-shadow-lg: 0 1rem 3rem rgba(16, 15, 15, 0.175) !default;
+$dropdown-box-shadow: $box-shadow !default;
+$flexoki-interface-font-size: $font-size-base !default;
+$flexoki-interface-line-height: $line-height-base !default;
+
+// Zensical's canonical Lucide defaults, sourced from lucide-static 1.33.0 and
+// embedded as colourable masks. Each semantic role remains overrideable
+// through template.bslib without bundling the complete Lucide registry.
+$flexoki-admonition-icon-note: url('data:image/svg+xml;charset=utf-8,<svg class="lucide lucide-paperclip" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551"/></svg>') !default;
+$flexoki-admonition-icon-abstract: url('data:image/svg+xml;charset=utf-8,<svg class="lucide lucide-notebook-text" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h4"/><path d="M2 10h4"/><path d="M2 14h4"/><path d="M2 18h4"/><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9.5 8h5"/><path d="M9.5 12H16"/><path d="M9.5 16H14"/></svg>') !default;
+$flexoki-admonition-icon-info: url('data:image/svg+xml;charset=utf-8,<svg class="lucide lucide-info" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>') !default;
+$flexoki-admonition-icon-tip: url('data:image/svg+xml;charset=utf-8,<svg class="lucide lucide-flame" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"/></svg>') !default;
+$flexoki-admonition-icon-success: url('data:image/svg+xml;charset=utf-8,<svg class="lucide lucide-check" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>') !default;
+$flexoki-admonition-icon-question: url('data:image/svg+xml;charset=utf-8,<svg class="lucide lucide-circle-question-mark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>') !default;
+$flexoki-admonition-icon-warning: url('data:image/svg+xml;charset=utf-8,<svg class="lucide lucide-triangle-alert" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>') !default;
+$flexoki-admonition-icon-failure: url('data:image/svg+xml;charset=utf-8,<svg class="lucide lucide-octagon-alert" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16h.01"/><path d="M12 8v4"/><path d="M15.312 2a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586l-4.688-4.688A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2z"/></svg>') !default;
+$flexoki-admonition-icon-danger: url('data:image/svg+xml;charset=utf-8,<svg class="lucide lucide-zap" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"/></svg>') !default;
+$flexoki-admonition-icon-bug: url('data:image/svg+xml;charset=utf-8,<svg class="lucide lucide-bug" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-9"/><path d="M14 7a4 4 0 0 1 4 4v3a6 6 0 0 1-12 0v-3a4 4 0 0 1 4-4z"/><path d="M14.12 3.88 16 2"/><path d="M21 21a4 4 0 0 0-3.81-4"/><path d="M21 5a4 4 0 0 1-3.55 3.97"/><path d="M22 13h-4"/><path d="M3 21a4 4 0 0 1 3.81-4"/><path d="M3 5a4 4 0 0 0 3.55 3.97"/><path d="M6 13H2"/><path d="m8 2 1.88 1.88"/><path d="M9 7.13V6a3 3 0 1 1 6 0v1.13"/></svg>') !default;
+$flexoki-admonition-icon-example: url('data:image/svg+xml;charset=utf-8,<svg class="lucide lucide-flask-conical" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"/><path d="M6.453 15h11.094"/><path d="M8.5 2h7"/></svg>') !default;
+$flexoki-admonition-icon-quote: url('data:image/svg+xml;charset=utf-8,<svg class="lucide lucide-message-square-quote" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14a2 2 0 0 0 2-2V8h-2"/><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/><path d="M8 14a2 2 0 0 0 2-2V8H8"/></svg>') !default;
+
+/*
+ * Accent values are ordered as light, light hover, light active, light
+ * subtle, dark, dark hover, dark active, and dark subtle. Theme-specific
+ * variables can be set through template.bslib in _pkgdown.yml.
+ * Primary controls resting actions; accent controls interactive states; footer
+ * credit controls attribution; surface and syntax variables select semantic
+ * treatments; the navbar and TOC variables control navigation states.
+ */
+$flexoki-navbar-current-style-options: neutral-background, accent-background, accent-text, plain;
+$flexoki-navbar-current-weight-options: bold, normal;
+$flexoki-navbar-hover-style-options: accent-background, accent-text;
+$flexoki-light-switch-style-options: dropdown, cycle;
+$flexoki-navbar-surface-options: page, raised;
+$flexoki-code-surface-options: raised, page, minimal;
+$flexoki-syntax-style-options: flexoki, onedark, classic, monochrome;
+$flexoki-toc-passed-style-options: faded, normal;
+$flexoki-toc-current-style-options: neutral-background, accent-background, accent-text, plain;
+$flexoki-toc-current-weight-options: bold, normal;
+$flexoki-toc-hover-style-options: accent-background, accent-text;
+
+@if index($flexoki-navbar-current-style-options, $flexoki-navbar-current-style) == null {
+  @error "Unknown navbar current style. Use neutral-background, accent-background, accent-text, or plain.";
+}
+
+@if index($flexoki-navbar-current-weight-options, $flexoki-navbar-current-weight) == null {
+  @error "Unknown navbar current weight. Use bold or normal.";
+}
+
+@if index($flexoki-navbar-hover-style-options, $flexoki-navbar-hover-style) == null {
+  @error "Unknown navbar hover style. Use accent-background or accent-text.";
+}
+
+@if index($flexoki-light-switch-style-options, $flexoki-light-switch-style) == null {
+  @error "Unknown light switch style. Use dropdown or cycle.";
+}
+
+@if index($flexoki-navbar-surface-options, $flexoki-navbar-surface) == null {
+  @error "Unknown navbar surface. Use page or raised.";
+}
+
+@if index($flexoki-code-surface-options, $flexoki-code-surface) == null {
+  @error "Unknown code surface. Use raised, page, or minimal.";
+}
+
+@if index($flexoki-syntax-style-options, $flexoki-syntax-style) == null {
+  @error "Unknown syntax style. Use flexoki, onedark, classic, or monochrome.";
+}
+
+@if index($flexoki-toc-passed-style-options, $flexoki-toc-passed-style) == null {
+  @error "Unknown TOC passed style. Use faded or normal.";
+}
+
+@if index($flexoki-toc-current-style-options, $flexoki-toc-current-style) == null {
+  @error "Unknown TOC current style. Use neutral-background, accent-background, accent-text, or plain.";
+}
+
+@if index($flexoki-toc-current-weight-options, $flexoki-toc-current-weight) == null {
+  @error "Unknown TOC current weight. Use bold or normal.";
+}
+
+@if index($flexoki-toc-hover-style-options, $flexoki-toc-hover-style) == null {
+  @error "Unknown TOC hover style. Use accent-background or accent-text.";
+}
+
+$flexoki-toc-enhanced: $flexoki-toc-passed-style != normal or
+  $flexoki-toc-current-style != neutral-background or
+  $flexoki-toc-current-weight != normal;
+
+$flexoki-syntax-palettes: (
+  flexoki: (
+    plain: tx,
+    comment: tx-3,
+    operator: tx-2,
+    error: re,
+    function: or,
+    builtin: or,
+    package: bl,
+    constant: ye,
+    keyword: gr,
+    string: cy,
+    variable: bl,
+    number: pu,
+    feature: ma
+  ),
+  onedark: (
+    plain: tx,
+    comment: tx-3,
+    operator: tx,
+    error: re,
+    function: bl,
+    builtin: cy,
+    package: tx,
+    constant: or,
+    keyword: pu,
+    string: gr,
+    variable: re,
+    number: or,
+    feature: re
+  ),
+  classic: (
+    plain: tx,
+    comment: tx-3,
+    operator: tx-2,
+    error: re,
+    function: bl,
+    builtin: cy,
+    package: pu,
+    constant: re,
+    keyword: gr,
+    string: bl,
+    variable: tx,
+    number: or,
+    feature: ye
+  ),
+  monochrome: (
+    plain: tx,
+    comment: tx-2,
+    operator: tx-2,
+    error: tx,
+    function: tx,
+    builtin: tx-2,
+    package: tx-2,
+    constant: tx,
+    keyword: tx,
+    string: tx-2,
+    variable: tx,
+    number: tx-2,
+    feature: tx-2
+  )
+);
+
+$flexoki-syntax-values: map-get($flexoki-syntax-palettes, $flexoki-syntax-style);
+
+@mixin flexoki-syntax-variables {
+  @each $role, $colour in $flexoki-syntax-values {
+    --flexoki-syntax-#{$role}: var(--flexoki-#{$colour});
+  }
+}
+
+@mixin flexoki-external-link-icon {
+  background-color: currentColor;
+  // The word joiner keeps the icon attached to the link's final word while
+  // allowing the rest of a long link to wrap normally.
+  content: "\2060";
+  display: inline;
+  padding-left: 0.12em;
+  padding-right: 0.8em;
+  -webkit-mask-image: var(--flexoki-external-link-icon);
+  -webkit-mask-position: right 0 top 0.08em;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 0.8em 0.8em;
+  mask-image: var(--flexoki-external-link-icon);
+  mask-position: right 0 top 0.08em;
+  mask-repeat: no-repeat;
+  mask-size: 0.8em 0.8em;
+  vertical-align: text-top;
+}
+
+$flexoki-accent-palettes: (
+  red: (#af3029, #942822, #6c201c, #ffcabb, #d14d41, #e8705f, #f89a8a, #6c201c),
+  orange: (#bc5215, #9d4310, #71320d, #fed3af, #da702c, #ec8b49, #f9ae77, #71320d),
+  yellow: (#ad8301, #8e6b01, #664d01, #f6e2a0, #d0a215, #dfb431, #eccb60, #664d01),
+  green: (#66800b, #536907, #3d4c07, #dde2b2, #879a39, #a0af54, #bec97e, #3d4c07),
+  cyan: (#24837b, #1c6c66, #164f4a, #bfe8d9, #3aa99f, #5abdac, #87d3c3, #164f4a),
+  blue: (#205ea6, #1a4f8c, #163b66, #c6dde8, #4385be, #66a0c8, #92bfdb, #163b66),
+  purple: (#5e409d, #4f3685, #3c2a62, #e2d9e9, #8b7ec8, #a699d0, #c4b9e0, #3c2a62),
+  magenta: (#a02f6f, #87285e, #641f46, #fccfda, #ce5d97, #e47da8, #f4a4c2, #641f46)
+);
+
+$flexoki-accent-values: map-get($flexoki-accent-palettes, $flexoki-accent);
+
+@if $flexoki-accent-values == null {
+  @error "Unknown Flexoki accent. Use red, orange, yellow, green, cyan, blue, purple, or magenta.";
+}
+
+$flexoki-accent-light: nth($flexoki-accent-values, 1);
+$flexoki-accent-light-hover: nth($flexoki-accent-values, 2);
+$flexoki-accent-light-active: nth($flexoki-accent-values, 3);
+$flexoki-accent-light-subtle: nth($flexoki-accent-values, 4);
+$flexoki-accent-dark: nth($flexoki-accent-values, 5);
+$flexoki-accent-dark-hover: nth($flexoki-accent-values, 6);
+$flexoki-accent-dark-active: nth($flexoki-accent-values, 7);
+$flexoki-accent-dark-subtle: nth($flexoki-accent-values, 8);
+
+$flexoki-primary-light: null;
+$flexoki-primary-dark: null;
+
+@if $flexoki-primary == base {
+  $flexoki-primary-light: #100f0f;
+  $flexoki-primary-dark: #cecdc3;
+} @else {
+  $flexoki-primary-values: map-get($flexoki-accent-palettes, $flexoki-primary);
+
+  @if $flexoki-primary-values == null {
+    @error "Unknown Flexoki primary. Use base, red, orange, yellow, green, cyan, blue, purple, or magenta.";
+  }
+
+  $flexoki-primary-light: nth($flexoki-primary-values, 1);
+  $flexoki-primary-dark: nth($flexoki-primary-values, 5);
+}
+
+/* Flexoki palette --------------------------------------------------------- */
+
+:root {
+  color-scheme: light;
+
+  --flexoki-external-link-icon: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-up-right" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>');
+
+  @if $flexoki-toc-enhanced {
+    --flexoki-toc-enhanced: 1;
+  } @else {
+    --flexoki-toc-enhanced: 0;
+  }
+
+  @if $flexoki-light-switch-style == cycle {
+    --flexoki-light-switch-cycle: 1;
+  } @else {
+    --flexoki-light-switch-cycle: 0;
+  }
+
+  --flexoki-paper: #fffcf0;
+  --flexoki-black: #100f0f;
+
+  --flexoki-50: #f2f0e5;
+  --flexoki-100: #e6e4d9;
+  --flexoki-150: #dad8ce;
+  --flexoki-200: #cecdc3;
+  --flexoki-300: #b7b5ac;
+  --flexoki-400: #9f9d96;
+  --flexoki-500: #878580;
+  --flexoki-600: #6f6e69;
+  --flexoki-700: #575653;
+  --flexoki-800: #403e3c;
+  --flexoki-850: #343331;
+  --flexoki-900: #282726;
+  --flexoki-950: #1c1b1a;
+
+  --flexoki-red-50: #ffe1d5;
+  --flexoki-red-100: #ffcabb;
+  --flexoki-red-150: #fdb2a2;
+  --flexoki-red-200: #f89a8a;
+  --flexoki-red-300: #e8705f;
+  --flexoki-red-400: #d14d41;
+  --flexoki-red-500: #c03e35;
+  --flexoki-red-600: #af3029;
+  --flexoki-red-700: #942822;
+  --flexoki-red-800: #6c201c;
+  --flexoki-red-850: #551b18;
+  --flexoki-red-900: #3e1715;
+  --flexoki-red-950: #261312;
+
+  --flexoki-orange-50: #ffe7ce;
+  --flexoki-orange-100: #fed3af;
+  --flexoki-orange-150: #fcc192;
+  --flexoki-orange-200: #f9ae77;
+  --flexoki-orange-300: #ec8b49;
+  --flexoki-orange-400: #da702c;
+  --flexoki-orange-500: #cb6120;
+  --flexoki-orange-600: #bc5215;
+  --flexoki-orange-700: #9d4310;
+  --flexoki-orange-800: #71320d;
+  --flexoki-orange-850: #59290d;
+  --flexoki-orange-900: #40200d;
+  --flexoki-orange-950: #27180e;
+
+  --flexoki-yellow-50: #faeec6;
+  --flexoki-yellow-100: #f6e2a0;
+  --flexoki-yellow-150: #f1d67e;
+  --flexoki-yellow-200: #eccb60;
+  --flexoki-yellow-300: #dfb431;
+  --flexoki-yellow-400: #d0a215;
+  --flexoki-yellow-500: #be9207;
+  --flexoki-yellow-600: #ad8301;
+  --flexoki-yellow-700: #8e6b01;
+  --flexoki-yellow-800: #664d01;
+  --flexoki-yellow-850: #503d02;
+  --flexoki-yellow-900: #3a2d04;
+  --flexoki-yellow-950: #241e08;
+
+  --flexoki-green-50: #edeecf;
+  --flexoki-green-100: #dde2b2;
+  --flexoki-green-150: #cdd597;
+  --flexoki-green-200: #bec97e;
+  --flexoki-green-300: #a0af54;
+  --flexoki-green-400: #879a39;
+  --flexoki-green-500: #768d21;
+  --flexoki-green-600: #66800b;
+  --flexoki-green-700: #536907;
+  --flexoki-green-800: #3d4c07;
+  --flexoki-green-850: #313d07;
+  --flexoki-green-900: #252d09;
+  --flexoki-green-950: #1a1e0c;
+
+  --flexoki-cyan-50: #ddf1e4;
+  --flexoki-cyan-100: #bfe8d9;
+  --flexoki-cyan-150: #a2dece;
+  --flexoki-cyan-200: #87d3c3;
+  --flexoki-cyan-300: #5abdac;
+  --flexoki-cyan-400: #3aa99f;
+  --flexoki-cyan-500: #2f968d;
+  --flexoki-cyan-600: #24837b;
+  --flexoki-cyan-700: #1c6c66;
+  --flexoki-cyan-800: #164f4a;
+  --flexoki-cyan-850: #143f3c;
+  --flexoki-cyan-900: #122f2c;
+  --flexoki-cyan-950: #101f1d;
+
+  --flexoki-blue-50: #e1eceb;
+  --flexoki-blue-100: #c6dde8;
+  --flexoki-blue-150: #abcfe2;
+  --flexoki-blue-200: #92bfdb;
+  --flexoki-blue-300: #66a0c8;
+  --flexoki-blue-400: #4385be;
+  --flexoki-blue-500: #3171b2;
+  --flexoki-blue-600: #205ea6;
+  --flexoki-blue-700: #1a4f8c;
+  --flexoki-blue-800: #163b66;
+  --flexoki-blue-850: #133051;
+  --flexoki-blue-900: #12253b;
+  --flexoki-blue-950: #101a24;
+
+  --flexoki-purple-50: #f0eaec;
+  --flexoki-purple-100: #e2d9e9;
+  --flexoki-purple-150: #d3cae6;
+  --flexoki-purple-200: #c4b9e0;
+  --flexoki-purple-300: #a699d0;
+  --flexoki-purple-400: #8b7ec8;
+  --flexoki-purple-500: #735eb5;
+  --flexoki-purple-600: #5e409d;
+  --flexoki-purple-700: #4f3685;
+  --flexoki-purple-800: #3c2a62;
+  --flexoki-purple-850: #31234e;
+  --flexoki-purple-900: #261c39;
+  --flexoki-purple-950: #1a1623;
+
+  --flexoki-magenta-50: #fee4e5;
+  --flexoki-magenta-100: #fccfda;
+  --flexoki-magenta-150: #f9b9cf;
+  --flexoki-magenta-200: #f4a4c2;
+  --flexoki-magenta-300: #e47da8;
+  --flexoki-magenta-400: #ce5d97;
+  --flexoki-magenta-500: #b74583;
+  --flexoki-magenta-600: #a02f6f;
+  --flexoki-magenta-700: #87285e;
+  --flexoki-magenta-800: #641f46;
+  --flexoki-magenta-850: #4f1b39;
+  --flexoki-magenta-900: #39172b;
+  --flexoki-magenta-950: #24131d;
+
+  /* Official Flexoki light-mode semantic mapping. */
+  --flexoki-bg: var(--flexoki-paper);
+  --flexoki-bg-2: var(--flexoki-50);
+  --flexoki-ui: var(--flexoki-100);
+  --flexoki-ui-2: var(--flexoki-150);
+  --flexoki-ui-3: var(--flexoki-200);
+  --flexoki-tx: var(--flexoki-black);
+  --flexoki-tx-2: var(--flexoki-600);
+  --flexoki-tx-3: var(--flexoki-300);
+  --flexoki-re: var(--flexoki-red-600);
+  --flexoki-or: var(--flexoki-orange-600);
+  --flexoki-ye: var(--flexoki-yellow-600);
+  --flexoki-gr: var(--flexoki-green-600);
+  --flexoki-cy: var(--flexoki-cyan-600);
+  --flexoki-bl: var(--flexoki-blue-600);
+  --flexoki-pu: var(--flexoki-purple-600);
+  --flexoki-ma: var(--flexoki-magenta-600);
+
+  --flexoki-primary: #{$flexoki-primary-light};
+  --flexoki-primary-rgb: #{red($flexoki-primary-light)}, #{green($flexoki-primary-light)}, #{blue($flexoki-primary-light)};
+  --flexoki-accent: #{$flexoki-accent-light};
+  --flexoki-accent-hover: #{$flexoki-accent-light-hover};
+  --flexoki-accent-active: #{$flexoki-accent-light-active};
+  --flexoki-accent-subtle: #{$flexoki-accent-light-subtle};
+  --flexoki-accent-rgb: #{red($flexoki-accent-light)}, #{green($flexoki-accent-light)}, #{blue($flexoki-accent-light)};
+  --flexoki-accent-hover-rgb: #{red($flexoki-accent-light-hover)}, #{green($flexoki-accent-light-hover)}, #{blue($flexoki-accent-light-hover)};
+  --flexoki-code-line-highlight: color-mix(in srgb, var(--flexoki-#{$flexoki-accent}-50), var(--flexoki-#{$flexoki-accent}-100));
+  --flexoki-code-line-highlight-rail: var(--flexoki-accent);
+  --flexoki-code-line-highlight-rail-width: 0.2rem;
+
+  --bs-primary: var(--flexoki-primary);
+  --bs-primary-rgb: var(--flexoki-primary-rgb);
+  --bs-link-color: var(--flexoki-primary);
+  --bs-link-color-rgb: var(--flexoki-primary-rgb);
+  --bs-link-hover-color: var(--flexoki-accent);
+  --bs-link-hover-color-rgb: var(--flexoki-accent-rgb);
+
+  @include flexoki-syntax-variables;
+}
+
+[data-bs-theme="dark"] {
+  color-scheme: dark;
+
+  /* Official Flexoki dark-mode semantic mapping. */
+  --flexoki-bg: var(--flexoki-black);
+  --flexoki-bg-2: var(--flexoki-950);
+  --flexoki-ui: var(--flexoki-900);
+  --flexoki-ui-2: var(--flexoki-850);
+  --flexoki-ui-3: var(--flexoki-800);
+  --flexoki-tx: var(--flexoki-200);
+  --flexoki-tx-2: var(--flexoki-500);
+  --flexoki-tx-3: var(--flexoki-700);
+  --flexoki-re: var(--flexoki-red-400);
+  --flexoki-or: var(--flexoki-orange-400);
+  --flexoki-ye: var(--flexoki-yellow-400);
+  --flexoki-gr: var(--flexoki-green-400);
+  --flexoki-cy: var(--flexoki-cyan-400);
+  --flexoki-bl: var(--flexoki-blue-400);
+  --flexoki-pu: var(--flexoki-purple-400);
+  --flexoki-ma: var(--flexoki-magenta-400);
+
+  --flexoki-primary: #{$flexoki-primary-dark};
+  --flexoki-primary-rgb: #{red($flexoki-primary-dark)}, #{green($flexoki-primary-dark)}, #{blue($flexoki-primary-dark)};
+  --flexoki-accent: #{$flexoki-accent-dark};
+  --flexoki-accent-hover: #{$flexoki-accent-dark-hover};
+  --flexoki-accent-active: #{$flexoki-accent-dark-active};
+  --flexoki-accent-subtle: #{$flexoki-accent-dark-subtle};
+  --flexoki-accent-rgb: #{red($flexoki-accent-dark)}, #{green($flexoki-accent-dark)}, #{blue($flexoki-accent-dark)};
+  --flexoki-accent-hover-rgb: #{red($flexoki-accent-dark-hover)}, #{green($flexoki-accent-dark-hover)}, #{blue($flexoki-accent-dark-hover)};
+  --flexoki-code-line-highlight: var(--flexoki-#{$flexoki-accent}-900);
+
+  @include flexoki-syntax-variables;
+
+  --bs-body-bg: var(--flexoki-black);
+  --bs-body-color: var(--flexoki-200);
+  --bs-emphasis-color: var(--flexoki-paper);
+  --bs-secondary-color: var(--flexoki-500);
+  --bs-secondary-bg: var(--flexoki-950);
+  --bs-tertiary-bg: var(--flexoki-900);
+  --bs-border-color: var(--flexoki-ui);
+  --bs-primary: var(--flexoki-primary);
+  --bs-primary-rgb: var(--flexoki-primary-rgb);
+  --bs-link-color: var(--flexoki-primary);
+  --bs-link-color-rgb: var(--flexoki-primary-rgb);
+  --bs-link-hover-color: var(--flexoki-accent);
+  --bs-link-hover-color-rgb: var(--flexoki-accent-rgb);
+  --bs-code-color: var(--flexoki-200);
+}
+
+// Preserve authored plot colours instead of applying pkgdown's automatic
+// dark-mode inversion. !important also covers pkgdown's more-specific
+// .no-invert-dark-mode descendant selectors.
+[data-bs-theme="dark"] :is(
+  img.r-plt,
+  pre .r-plt.img img,
+  .cell-output-display img,
+  .html-widget
+) {
+  filter: none !important;
+}
+
+/* Page structure --------------------------------------------------------- */
+
+body {
+  background: var(--flexoki-bg);
+  color: var(--flexoki-tx);
+  font-size: $flexoki-interface-font-size;
+  line-height: $flexoki-interface-line-height;
+  letter-spacing: -0.005em;
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  letter-spacing: -0.005em;
+}
+
+// Zensical's modern typeset scale: 15px content on a spacious 27px rhythm.
+// Keep it scoped to package content so Bootstrap controls retain usable sizing.
+main {
+  font-size: $flexoki-content-font-size;
+  line-height: $flexoki-content-line-height;
+  letter-spacing: -0.01em;
+  overflow-wrap: break-word;
+}
+
+::selection {
+  background: var(--flexoki-accent-subtle);
+  color: var(--flexoki-black);
+}
+
+[data-bs-theme="dark"] ::selection {
+  background: var(--flexoki-accent-subtle);
+  color: var(--flexoki-paper);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+  color: var(--bs-heading-color);
+  font-weight: $headings-font-weight;
+  letter-spacing: -0.015em;
+}
+
+main h1 {
+  margin: 0 0 1.25em;
+  font-size: 1.875em;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+}
+
+main h2 {
+  margin: 1.6em 0 0.64em;
+  font-size: 1.5em;
+  line-height: 1.4;
+  letter-spacing: -0.025em;
+}
+
+main h3 {
+  margin: 1.6em 0 0.8em;
+  font-size: 1.25em;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+
+main h2 + h3 {
+  margin-top: 0.8em;
+}
+
+main h4 {
+  margin: 1em 0;
+  font-size: 1em;
+  letter-spacing: -0.01em;
+}
+
+main h5,
+main h6 {
+  margin: 1.25em 0;
+  font-size: 0.8em;
+  letter-spacing: -0.01em;
+}
+
+main h5 {
+  text-transform: uppercase;
+}
+
+main h5 code {
+  text-transform: none;
+}
+
+main p {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+main :is(blockquote, dl, figure, ol, pre, ul, div.sourceCode) {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+main :is(ol, ul) li {
+  margin-bottom: 0.5em;
+}
+
+main :is(ol, ul) li:last-child {
+  margin-bottom: 0;
+}
+
+main :is(ol, ul) :is(ol, ul),
+main :is(ol, ul) li > :is(blockquote, p) {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+a {
+  color: var(--flexoki-primary);
+  text-decoration-color: currentColor;
+  text-underline-offset: 0.16em;
+}
+
+a:hover {
+  color: var(--flexoki-accent);
+  text-decoration-color: currentColor;
+}
+
+@if $flexoki-external-link-icons {
+  main a.external-link:not(.btn):not(.badge):not(.headerlink):not(.footnote-backref):not(.footnote-ref):not(pre a):not(code a):not(:has(code)):not(:has(.badge)):not(:has(img)):not(:has(svg))::after {
+    @include flexoki-external-link-icon;
+  }
+}
+
+@if $flexoki-code-block-external-link-icons {
+  main pre a.external-link:not(.btn):not(.headerlink):not(.footnote-backref):not(.footnote-ref)::after {
+    @include flexoki-external-link-icon;
+  }
+}
+
+@if $flexoki-inline-code-external-link-icons {
+  main code:not(pre code) a.external-link:not(.btn):not(.headerlink):not(.footnote-backref):not(.footnote-ref)::after,
+  main a.external-link:not(.btn):not(.headerlink):not(.footnote-backref):not(.footnote-ref):not(pre a):has(code)::after {
+    @include flexoki-external-link-icon;
+  }
+}
+
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--flexoki-accent) 48%, transparent);
+  outline-offset: 2px;
+}
+
+.navbar {
+  --bs-navbar-brand-color: var(--flexoki-tx);
+  --bs-navbar-brand-hover-color: var(--flexoki-accent);
+  font-size: $flexoki-interface-font-size;
+  line-height: $flexoki-interface-line-height;
+  letter-spacing: -0.005em;
+  border-bottom: 1px solid var(--flexoki-ui);
+}
+
+@if $flexoki-navbar-surface == page {
+  .navbar {
+    background-color: var(--flexoki-bg);
+  }
+} @else {
+  .navbar {
+    background-color: var(--flexoki-bg-2);
+  }
+}
+
+@media (min-width: 992px) {
+  .navbar .navbar-nav {
+    column-gap: 0.25rem;
+  }
+
+  .navbar .dropdown-menu {
+    min-width: 10rem;
+    padding: 0.375rem;
+  }
+
+  .navbar .dropdown-menu > li + li {
+    margin-top: 0.375rem;
+  }
+
+  .navbar .dropdown-item {
+    border-radius: $border-radius;
+  }
+}
+
+// pkgdown prefixes every named article section with a divider, including the
+// first section when no introductory article precedes it.
+.navbar .dropdown-menu > li:first-child:has(> .dropdown-divider) {
+  display: none;
+}
+
+.navbar .dropdown-menu > li:first-child:has(> .dropdown-divider) + li {
+  margin-top: 0;
+}
+
+.navbar .navbar-brand {
+  font-size: inherit;
+  font-weight: $font-weight-semibold;
+}
+
+.navbar .navbar-toggler {
+  border-color: var(--flexoki-ui-2);
+}
+
+.navbar .navbar-toggler:hover,
+.navbar .navbar-toggler:focus {
+  background-color: var(--flexoki-accent-subtle);
+  border-color: var(--flexoki-accent);
+}
+
+.navbar .navbar-toggler:focus {
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--flexoki-accent) 24%, transparent);
+}
+
+.navbar .dropdown-menu[aria-labelledby="dropdown-lightswitch"] .dropdown-item {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+  border-radius: $border-radius;
+}
+
+.navbar .dropdown-menu[aria-labelledby="dropdown-lightswitch"] .dropdown-item > .fa {
+  flex: 0 0 1.125rem;
+  width: 1.125rem;
+  text-align: center;
+}
+
+.navbar .dropdown-menu[aria-labelledby="dropdown-lightswitch"] .dropdown-item.active,
+.navbar .dropdown-menu[aria-labelledby="dropdown-lightswitch"] .dropdown-item:hover,
+.navbar .dropdown-menu[aria-labelledby="dropdown-lightswitch"] .dropdown-item:focus {
+  color: var(--flexoki-accent);
+  background-color: var(--flexoki-accent-subtle);
+}
+
+@if $flexoki-light-switch-style == cycle {
+  #dropdown-lightswitch > .fa {
+    flex: 0 0 1.125rem;
+    width: 1.125rem;
+    text-align: center;
+  }
+
+  #dropdown-lightswitch::after,
+  .navbar .dropdown-menu[aria-labelledby="dropdown-lightswitch"] {
+    display: none !important;
+  }
+
+  @media (min-width: 992px) {
+    #dropdown-lightswitch {
+      width: 2.25rem;
+      padding-inline: 0.5rem;
+      text-align: center;
+    }
+  }
+}
+
+@media (max-width: 991.98px) {
+  .navbar .navbar-collapse {
+    max-height: calc(100vh - var(--pkgdown-nav-height, 72px) - 1rem);
+    max-height: calc(100dvh - var(--pkgdown-nav-height, 72px) - 1rem);
+    margin: 0.75rem 0 0 !important;
+    padding: 0.5rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background-color: var(--flexoki-bg-2);
+    border: 1px solid var(--flexoki-ui);
+    border-radius: $border-radius-lg;
+
+    @if $enable-shadows {
+      box-shadow: $box-shadow-lg;
+    } @else {
+      box-shadow: none;
+    }
+  }
+
+  .navbar .navbar-nav {
+    gap: 0.125rem;
+  }
+
+  .navbar .nav-link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.625rem 0.75rem;
+    border-radius: $border-radius;
+  }
+
+  .navbar .dropdown-toggle::after {
+    margin-left: auto;
+    transition: transform 150ms ease;
+  }
+
+  .navbar .dropdown-toggle.show::after {
+    transform: rotate(180deg);
+  }
+
+  .navbar .dropdown-menu,
+  .navbar .dropdown-menu-end {
+    position: static;
+    float: none;
+    width: auto;
+    min-width: 0;
+    margin: 0.125rem 0.5rem 0.375rem;
+    padding: 0.25rem 0 0.25rem 0.5rem;
+    background-color: transparent;
+    border: 0;
+    border-left: 2px solid var(--flexoki-ui-2);
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .navbar .dropdown-item {
+    display: flex;
+    align-items: center;
+    min-height: 2.5rem;
+    padding: 0.5rem 0.75rem;
+    white-space: normal;
+    border-radius: $border-radius;
+  }
+
+  .navbar .dropdown-menu[aria-labelledby="dropdown-lightswitch"] {
+    width: 100%;
+    margin: 0.25rem 0 0.375rem;
+    padding: 0.25rem;
+    background-color: var(--flexoki-bg);
+    border: 1px solid var(--flexoki-ui);
+    border-radius: $border-radius-lg;
+  }
+
+  .navbar .dropdown-menu[aria-labelledby="dropdown-lightswitch"].show {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.25rem;
+  }
+
+  .navbar .dropdown-menu[aria-labelledby="dropdown-lightswitch"] .dropdown-item {
+    justify-content: center;
+    min-height: 3rem;
+    padding: 0.5rem 0.375rem;
+    gap: 0.5rem;
+  }
+
+  .navbar .navbar-collapse > .navbar-nav + .navbar-nav {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--flexoki-ui);
+  }
+
+  .navbar .navbar-collapse form[role="search"],
+  .navbar .navbar-collapse input[type="search"] {
+    width: 100%;
+  }
+
+  .navbar .navbar-collapse input[type="search"] {
+    min-height: 2.75rem;
+  }
+
+  .navbar .navbar-collapse > .navbar-nav + .navbar-nav > .nav-item > .nav-link[aria-label]::before {
+    order: 1;
+    margin-left: 0.625rem;
+    content: attr(aria-label);
+  }
+
+  .navbar .navbar-collapse > .navbar-nav + .navbar-nav > .nav-item > .nav-link[aria-label] > .fa {
+    order: 0;
+    width: 1.25rem;
+    text-align: center;
+  }
+
+  .navbar .navbar-collapse > .navbar-nav + .navbar-nav > .nav-item > .dropdown-toggle[aria-label]::after {
+    order: 2;
+  }
+}
+
+.navbar .dropdown-item:hover,
+.navbar .dropdown-item:focus {
+  color: var(--flexoki-accent);
+}
+
+@if $flexoki-navbar-current-style == neutral-background {
+  .navbar .navbar-nav > .nav-item.active > .nav-link,
+  .navbar .navbar-nav > .nav-item > .nav-link.active {
+    color: var(--flexoki-tx);
+    background-color: color-mix(in srgb, var(--flexoki-tx) 10%, transparent);
+  }
+} @else if $flexoki-navbar-current-style == accent-background {
+  .navbar .navbar-nav > .nav-item.active > .nav-link,
+  .navbar .navbar-nav > .nav-item > .nav-link.active {
+    color: var(--flexoki-accent);
+    background-color: color-mix(in srgb, var(--flexoki-accent) 14%, transparent);
+  }
+} @else if $flexoki-navbar-current-style == accent-text {
+  .navbar .navbar-nav > .nav-item.active > .nav-link,
+  .navbar .navbar-nav > .nav-item > .nav-link.active {
+    color: var(--flexoki-accent);
+    background-color: transparent;
+  }
+} @else if $flexoki-navbar-current-style == plain {
+  .navbar .navbar-nav > .nav-item.active > .nav-link,
+  .navbar .navbar-nav > .nav-item > .nav-link.active {
+    color: var(--flexoki-tx);
+    background-color: transparent;
+  }
+}
+
+@if $flexoki-navbar-current-weight == bold {
+  .navbar .navbar-nav > .nav-item.active > .nav-link,
+  .navbar .navbar-nav > .nav-item > .nav-link.active {
+    font-weight: $font-weight-semibold;
+  }
+} @else {
+  .navbar .navbar-nav > .nav-item.active > .nav-link,
+  .navbar .navbar-nav > .nav-item > .nav-link.active {
+    font-weight: normal;
+  }
+}
+
+@if $flexoki-navbar-hover-style == accent-background {
+  .navbar .navbar-nav > .nav-item > .nav-link:hover,
+  .navbar .navbar-nav > .nav-item > .nav-link:focus {
+    color: var(--flexoki-accent);
+    background-color: color-mix(in srgb, var(--flexoki-accent) 14%, transparent);
+  }
+} @else if $flexoki-navbar-hover-style == accent-text {
+  .navbar .navbar-nav > .nav-item > .nav-link:hover,
+  .navbar .navbar-nav > .nav-item > .nav-link:focus {
+    color: var(--flexoki-accent);
+    background-color: transparent;
+  }
+
+  @if $flexoki-navbar-current-style == neutral-background {
+    .navbar .navbar-nav > .nav-item.active > .nav-link:hover,
+    .navbar .navbar-nav > .nav-item.active > .nav-link:focus,
+    .navbar .navbar-nav > .nav-item > .nav-link.active:hover,
+    .navbar .navbar-nav > .nav-item > .nav-link.active:focus {
+      background-color: color-mix(in srgb, var(--flexoki-tx) 10%, transparent);
+    }
+  } @else if $flexoki-navbar-current-style == accent-background {
+    .navbar .navbar-nav > .nav-item.active > .nav-link:hover,
+    .navbar .navbar-nav > .nav-item.active > .nav-link:focus,
+    .navbar .navbar-nav > .nav-item > .nav-link.active:hover,
+    .navbar .navbar-nav > .nav-item > .nav-link.active:focus {
+      background-color: color-mix(in srgb, var(--flexoki-accent) 14%, transparent);
+    }
+  }
+}
+
+.dropdown-menu,
+.search-details,
+.algolia-autocomplete .algolia-docsearch-suggestion--content {
+  background-color: var(--flexoki-bg-2);
+  border-color: var(--flexoki-ui);
+
+  @if $enable-shadows {
+    box-shadow: $dropdown-box-shadow;
+  } @else {
+    box-shadow: none;
+  }
+}
+
+.dropdown-item {
+  color: var(--flexoki-tx);
+}
+
+.navbar .dropdown-item.active,
+.navbar .dropdown-item.active:hover,
+.navbar .dropdown-item.active:focus,
+.navbar .dropdown-item:active {
+  background-color: var(--flexoki-accent);
+  color: var(--flexoki-bg);
+}
+
+.page-header,
+main > h1:first-child {
+  border-bottom-color: var(--flexoki-ui);
+}
+
+.page-header {
+  margin-bottom: 1.25rem;
+}
+
+.page-header h1 {
+  margin-bottom: 0.4em;
+}
+
+main > h1:first-child {
+  margin-bottom: 1.25em;
+}
+
+.contents h2,
+.contents h3,
+.contents h4 {
+  scroll-margin-top: calc(var(--pkgdown-nav-height, 72px) + 1rem);
+}
+
+// pkgdown sizes the mobile article sidebar with 100vw. On platforms where the
+// vertical scrollbar consumes layout width, that makes the sidebar wider than
+// its row and introduces a page-level horizontal scrollbar.
+@media (max-width: 767.98px) {
+  .row > aside {
+    width: calc(100% - 1rem);
+  }
+}
+
+.text-muted,
+.section-desc,
+.roles,
+.author,
+.aside,
+small {
+  color: var(--flexoki-tx-2) !important;
+}
+
+hr,
+.border-top,
+.border-bottom {
+  border-color: var(--flexoki-ui) !important;
+  opacity: 1;
+}
+
+/* Navigation and pkgdown sidebars --------------------------------------- */
+
+.pkgdown-sidebar .nav-link,
+.sidebar .nav-link {
+  color: var(--flexoki-tx-2);
+  border-left-color: transparent;
+}
+
+.pkgdown-sidebar,
+.sidebar,
+#toc {
+  font-size: $flexoki-interface-font-size;
+  line-height: $flexoki-interface-line-height;
+  letter-spacing: -0.005em;
+}
+
+.pkgdown-sidebar .nav-link:hover,
+.pkgdown-sidebar .nav-link.active,
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+  color: var(--flexoki-accent);
+}
+
+.pkgdown-sidebar .nav-link.active,
+.sidebar .nav-link.active {
+  font-weight: normal;
+}
+
+/* Flexoki hover treatment remains independent of reading-position options. */
+#toc > .nav a.nav-link {
+  color: var(--flexoki-tx);
+  border-left-color: transparent;
+}
+
+@if $flexoki-toc-enhanced {
+  #toc .nav-link {
+    transition: none;
+  }
+}
+
+@if $flexoki-toc-passed-style == faded {
+  #toc > .nav a.nav-link.flexokidown-passed {
+    color: var(--flexoki-tx-2);
+  }
+
+  #toc > .nav a.nav-link.flexokidown-passed:hover,
+  #toc > .nav a.nav-link.flexokidown-passed:focus {
+    color: var(--flexoki-accent);
+  }
+}
+
+@if $flexoki-toc-current-style == neutral-background {
+  #toc > .nav a.nav-link.flexokidown-current {
+    color: var(--flexoki-tx);
+    background-color: color-mix(in srgb, var(--flexoki-tx) 10%, transparent);
+    border-left-color: transparent;
+  }
+} @else if $flexoki-toc-current-style == accent-background {
+  #toc > .nav a.nav-link.flexokidown-current {
+    color: var(--flexoki-accent);
+    background-color: color-mix(in srgb, var(--flexoki-accent) 14%, transparent);
+    border-left-color: var(--flexoki-accent);
+  }
+} @else if $flexoki-toc-current-style == accent-text {
+  #toc > .nav a.nav-link.flexokidown-current {
+    color: var(--flexoki-accent);
+    background-color: transparent;
+    border-left-color: transparent;
+  }
+} @else if $flexoki-toc-current-style == plain {
+  #toc > .nav a.nav-link.flexokidown-current {
+    color: var(--flexoki-tx);
+    background-color: transparent;
+    border-left-color: transparent;
+  }
+}
+
+@if $flexoki-toc-current-weight == bold {
+  #toc > .nav a.nav-link.flexokidown-current {
+    font-weight: $font-weight-semibold;
+  }
+} @else {
+  #toc > .nav a.nav-link.flexokidown-current {
+    font-weight: normal;
+  }
+}
+
+/* Keep hover/focus above every current-heading treatment in the cascade. */
+@if $flexoki-toc-hover-style == accent-background {
+  #toc > .nav a.nav-link:hover,
+  #toc > .nav a.nav-link:focus,
+  #toc > .nav a.nav-link.flexokidown-current:hover,
+  #toc > .nav a.nav-link.flexokidown-current:focus {
+    color: var(--flexoki-accent);
+    background-color: color-mix(in srgb, var(--flexoki-accent) 14%, transparent);
+    border-left-color: var(--flexoki-accent);
+  }
+} @else if $flexoki-toc-hover-style == accent-text {
+  #toc > .nav a.nav-link:hover,
+  #toc > .nav a.nav-link:focus {
+    color: var(--flexoki-accent);
+    background-color: transparent;
+    border-left-color: transparent;
+  }
+
+  @if $flexoki-toc-current-style == neutral-background {
+    #toc > .nav a.nav-link.flexokidown-current:hover,
+    #toc > .nav a.nav-link.flexokidown-current:focus {
+      color: var(--flexoki-accent);
+      background-color: color-mix(in srgb, var(--flexoki-tx) 10%, transparent);
+      border-left-color: transparent;
+    }
+  } @else if $flexoki-toc-current-style == accent-background {
+    #toc > .nav a.nav-link.flexokidown-current:hover,
+    #toc > .nav a.nav-link.flexokidown-current:focus {
+      color: var(--flexoki-accent);
+      background-color: color-mix(in srgb, var(--flexoki-accent) 14%, transparent);
+      border-left-color: var(--flexoki-accent);
+    }
+  }
+}
+
+.ref-index th,
+.template-reference-index .section h2 {
+  border-bottom-color: var(--flexoki-ui);
+}
+
+.template-reference-index td.aliases a,
+.template-reference-topic .usage code a {
+  color: var(--flexoki-syntax-function);
+}
+
+/* Code and syntax highlighting ------------------------------------------ */
+
+code,
+kbd,
+samp,
+pre {
+  font-variant-ligatures: none;
+}
+
+main pre {
+  font-size: 0.8533333333em;
+  line-height: 1.5;
+}
+
+main :not(pre) > code {
+  font-size: 0.8533333333em;
+}
+
+:not(pre) > code {
+  padding: 0.12em 0.3em;
+  color: var(--flexoki-syntax-plain);
+  border-radius: $border-radius-sm;
+}
+
+main a:not(pre a) > code {
+  color: inherit;
+}
+
+/* pkgdown gives some reference links a more specific resting colour. Keep
+ * both inline-code structures on the standard accent-text hover treatment. */
+main :not(pre) > code a:hover,
+main a:hover:not(pre a) > code {
+  color: var(--flexoki-accent) !important;
+}
+
+pre,
+div.sourceCode,
+.sourceCode pre {
+  color: var(--flexoki-syntax-plain);
+  border-radius: $border-radius;
+}
+
+@if $flexoki-code-surface == raised {
+  :not(pre) > code {
+    background: var(--flexoki-bg-2);
+    border: 1px solid var(--flexoki-ui);
+  }
+
+  pre,
+  div.sourceCode,
+  .sourceCode pre {
+    background: var(--flexoki-bg-2) !important;
+    border-color: var(--flexoki-ui) !important;
+  }
+} @else if $flexoki-code-surface == page {
+  :not(pre) > code {
+    background: var(--flexoki-bg);
+    border: 1px solid var(--flexoki-ui);
+  }
+
+  pre,
+  div.sourceCode,
+  .sourceCode pre {
+    background: var(--flexoki-bg) !important;
+    border-color: var(--flexoki-ui) !important;
+  }
+} @else {
+  :not(pre) > code {
+    background: transparent;
+    border: 1px solid transparent;
+  }
+
+  pre,
+  div.sourceCode,
+  .sourceCode pre {
+    background: transparent !important;
+    border-color: transparent !important;
+  }
+}
+
+pre code,
+.sourceCode code {
+  color: inherit;
+  background: transparent;
+}
+
+.sourceCode pre {
+  --flexoki-code-padding-inline: 0.75rem;
+}
+
+.sourceCode code.flexokidown-highlighted-code {
+  display: block;
+  min-width: 100%;
+  width: max-content;
+}
+
+.sourceCode code.flexokidown-highlighted-code > .flexokidown-highlighted-line {
+  position: relative;
+  display: inline-block;
+  min-width: calc(100% + var(--flexoki-code-padding-inline) + var(--flexoki-code-padding-inline));
+  margin-inline: calc(-1 * var(--flexoki-code-padding-inline));
+  padding-inline: var(--flexoki-code-padding-inline);
+  background-color: var(--flexoki-code-line-highlight);
+}
+
+.sourceCode code.flexokidown-highlighted-code > .flexokidown-highlighted-line::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--flexoki-code-line-highlight-rail-width);
+  pointer-events: none;
+  content: "";
+  background-color: var(--flexoki-code-line-highlight-rail);
+}
+
+@media (max-width: 575.98px) {
+  .sourceCode pre {
+    --flexoki-code-padding-inline: 1rem;
+  }
+}
+
+pre .co,
+pre .an,
+pre .cv,
+pre .do,
+pre .in,
+pre .wa,
+pre .hljs-comment,
+pre .hljs-quote {
+  color: var(--flexoki-syntax-comment) !important;
+  font-style: italic;
+}
+
+pre .kw,
+pre .cf,
+pre .hljs-keyword {
+  color: var(--flexoki-syntax-keyword) !important;
+}
+
+pre .dt,
+pre .bu,
+pre .hljs-type,
+pre .hljs-built_in {
+  color: var(--flexoki-syntax-builtin) !important;
+}
+
+pre .cn,
+pre .hljs-literal {
+  color: var(--flexoki-syntax-constant) !important;
+}
+
+pre .st,
+pre .ch,
+pre .sc,
+pre .ss,
+pre .vs,
+pre .hljs-string,
+pre .hljs-regexp {
+  color: var(--flexoki-syntax-string) !important;
+}
+
+pre .dv,
+pre .bn,
+pre .fl,
+pre .hljs-number {
+  color: var(--flexoki-syntax-number) !important;
+}
+
+pre .fu,
+pre .hljs-title,
+pre .hljs-function {
+  color: var(--flexoki-syntax-function) !important;
+}
+
+pre .fu:has(+ .fu + .fu) {
+  color: var(--flexoki-syntax-package) !important;
+  font-style: italic;
+  font-weight: $font-weight-semibold;
+}
+
+pre .fu + .fu:has(+ .fu) {
+  color: var(--flexoki-syntax-operator) !important;
+  font-style: normal;
+  font-weight: inherit;
+}
+
+pre .op,
+pre .hljs-operator,
+pre .hljs-punctuation {
+  color: var(--flexoki-syntax-operator) !important;
+}
+
+pre .at,
+pre .va,
+pre .ex,
+pre .hljs-attr,
+pre .hljs-attribute,
+pre .hljs-variable,
+pre .hljs-params {
+  color: var(--flexoki-syntax-variable) !important;
+}
+
+pre .al,
+pre .er,
+pre .im {
+  color: var(--flexoki-syntax-error) !important;
+}
+
+pre .ot,
+pre .pp,
+pre .hljs-meta,
+pre .hljs-tag,
+pre .hljs-selector-tag {
+  color: var(--flexoki-syntax-feature) !important;
+}
+
+.downlit .fu,
+.downlit .fl,
+.downlit .dv {
+  font-weight: inherit;
+}
+
+.copy-button,
+.btn.btn-copy-ex {
+  z-index: 1;
+  color: var(--flexoki-tx-3);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.btn.btn-copy-ex {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+}
+
+.copy-button:hover,
+.copy-button:focus-visible,
+.btn.btn-copy-ex:hover,
+.btn.btn-copy-ex:focus-visible {
+  color: var(--flexoki-accent);
+  background: var(--flexoki-accent-subtle);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* Bootstrap components -------------------------------------------------- */
+
+.card,
+.list-group-item,
+.modal-content,
+.popover,
+.toast {
+  color: var(--flexoki-tx);
+  background-color: var(--flexoki-bg-2);
+  border-color: var(--flexoki-ui);
+}
+
+.table {
+  --bs-table-color: var(--flexoki-tx);
+  --bs-table-bg: transparent;
+  --bs-table-border-color: var(--flexoki-ui);
+  --bs-table-striped-bg: var(--flexoki-bg-2);
+  --bs-table-hover-bg: color-mix(in srgb, var(--flexoki-accent) 8%, transparent);
+}
+
+main .table {
+  font-size: 0.8533333333em;
+  line-height: 1.8;
+}
+
+main .table > :not(caption) > * > * {
+  padding: 0.9375em 1.25em;
+}
+
+blockquote {
+  color: var(--flexoki-tx-2);
+  border-left-color: var(--flexoki-tx-2);
+}
+
+:root {
+  --flexoki-admonition-icon-note: #{$flexoki-admonition-icon-note};
+  --flexoki-admonition-icon-abstract: #{$flexoki-admonition-icon-abstract};
+  --flexoki-admonition-icon-info: #{$flexoki-admonition-icon-info};
+  --flexoki-admonition-icon-tip: #{$flexoki-admonition-icon-tip};
+  --flexoki-admonition-icon-success: #{$flexoki-admonition-icon-success};
+  --flexoki-admonition-icon-question: #{$flexoki-admonition-icon-question};
+  --flexoki-admonition-icon-warning: #{$flexoki-admonition-icon-warning};
+  --flexoki-admonition-icon-failure: #{$flexoki-admonition-icon-failure};
+  --flexoki-admonition-icon-danger: #{$flexoki-admonition-icon-danger};
+  --flexoki-admonition-icon-bug: #{$flexoki-admonition-icon-bug};
+  --flexoki-admonition-icon-example: #{$flexoki-admonition-icon-example};
+  --flexoki-admonition-icon-quote: #{$flexoki-admonition-icon-quote};
+}
+
+main :is(.alert, .callout, .admonition) {
+  --flexoki-admonition-accent: var(--flexoki-bl);
+  --flexoki-admonition-background: var(--flexoki-blue-50);
+  --flexoki-admonition-icon: var(--flexoki-admonition-icon-note);
+
+  color: var(--flexoki-tx);
+  background-color: var(--flexoki-admonition-background);
+  border: 0;
+  border-radius: 0.75rem;
+  box-shadow: none;
+  padding: 1rem 1.25rem;
+  line-height: 1.65;
+}
+
+main :is(.alert, .callout, .admonition) > :first-child {
+  margin-top: 0;
+}
+
+main :is(.alert, .callout, .admonition) > :last-child {
+  margin-bottom: 0;
+}
+
+main :is(.alert, .callout, .admonition) > :is(
+  .admonition-title,
+  .callout-title,
+  p:first-child:has(> strong:only-child)
+) {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+  margin-bottom: 0.625rem;
+  color: var(--flexoki-tx);
+  font-weight: $font-weight-semibold;
+  line-height: 1.4;
+}
+
+main :is(.alert, .callout, .admonition) > :is(
+  .admonition-title,
+  .callout-title,
+  p:first-child:has(> strong:only-child)
+)::before {
+  flex: 0 0 1.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  content: "";
+  background-color: var(--flexoki-admonition-accent);
+  -webkit-mask-image: var(--flexoki-admonition-icon);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-image: var(--flexoki-admonition-icon);
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+}
+
+main :is(.alert-primary, .callout-note, .admonition.note) {
+  --flexoki-admonition-accent: var(--flexoki-bl);
+  --flexoki-admonition-background: var(--flexoki-blue-50);
+  --flexoki-admonition-icon: var(--flexoki-admonition-icon-note);
+}
+
+main :is(.callout-abstract, .admonition.abstract) {
+  --flexoki-admonition-accent: var(--flexoki-bl);
+  --flexoki-admonition-background: var(--flexoki-blue-100);
+  --flexoki-admonition-icon: var(--flexoki-admonition-icon-abstract);
+}
+
+main :is(.alert-info, .callout-info, .admonition.info) {
+  --flexoki-admonition-accent: var(--flexoki-cy);
+  --flexoki-admonition-background: var(--flexoki-cyan-50);
+  --flexoki-admonition-icon: var(--flexoki-admonition-icon-info);
+}
+
+main :is(.callout-tip, .admonition.tip) {
+  --flexoki-admonition-accent: var(--flexoki-cy);
+  --flexoki-admonition-background: var(--flexoki-cyan-100);
+  --flexoki-admonition-icon: var(--flexoki-admonition-icon-tip);
+}
+
+main :is(.alert-success, .callout-success, .admonition.success) {
+  --flexoki-admonition-accent: var(--flexoki-gr);
+  --flexoki-admonition-background: var(--flexoki-green-50);
+  --flexoki-admonition-icon: var(--flexoki-admonition-icon-success);
+}
+
+main :is(.callout-question, .admonition.question) {
+  --flexoki-admonition-accent: var(--flexoki-ye);
+  --flexoki-admonition-background: var(--flexoki-yellow-50);
+  --flexoki-admonition-icon: var(--flexoki-admonition-icon-question);
+}
+
+main :is(.alert-warning, .callout-warning, .callout-caution, .admonition.warning) {
+  --flexoki-admonition-accent: var(--flexoki-or);
+  --flexoki-admonition-background: var(--flexoki-orange-50);
+  --flexoki-admonition-icon: var(--flexoki-admonition-icon-warning);
+}
+
+main :is(.callout-failure, .admonition.failure) {
+  --flexoki-admonition-accent: var(--flexoki-re);
+  --flexoki-admonition-background: var(--flexoki-red-50);
+  --flexoki-admonition-icon: var(--flexoki-admonition-icon-failure);
+}
+
+main :is(.alert-danger, .callout-danger, .callout-important, .admonition.danger) {
+  --flexoki-admonition-accent: var(--flexoki-re);
+  --flexoki-admonition-background: var(--flexoki-red-100);
+  --flexoki-admonition-icon: var(--flexoki-admonition-icon-danger);
+}
+
+main :is(.callout-bug, .admonition.bug) {
+  --flexoki-admonition-accent: var(--flexoki-ma);
+  --flexoki-admonition-background: var(--flexoki-magenta-50);
+  --flexoki-admonition-icon: var(--flexoki-admonition-icon-bug);
+}
+
+main :is(.callout-example, .admonition.example) {
+  --flexoki-admonition-accent: var(--flexoki-pu);
+  --flexoki-admonition-background: var(--flexoki-purple-50);
+  --flexoki-admonition-icon: var(--flexoki-admonition-icon-example);
+}
+
+main :is(.alert-secondary, .callout-quote, .admonition.quote) {
+  --flexoki-admonition-accent: var(--flexoki-tx-2);
+  --flexoki-admonition-background: var(--flexoki-100);
+  --flexoki-admonition-icon: var(--flexoki-admonition-icon-quote);
+}
+
+[data-bs-theme="dark"] main :is(.alert, .callout, .admonition) {
+  --flexoki-admonition-background: var(--flexoki-blue-950);
+}
+
+[data-bs-theme="dark"] main :is(.callout-abstract, .admonition.abstract) {
+  --flexoki-admonition-background: var(--flexoki-blue-900);
+}
+
+[data-bs-theme="dark"] main :is(.alert-info, .callout-info, .admonition.info) {
+  --flexoki-admonition-background: var(--flexoki-cyan-950);
+}
+
+[data-bs-theme="dark"] main :is(.callout-tip, .admonition.tip) {
+  --flexoki-admonition-background: var(--flexoki-cyan-900);
+}
+
+[data-bs-theme="dark"] main :is(.alert-success, .callout-success, .admonition.success) {
+  --flexoki-admonition-background: var(--flexoki-green-950);
+}
+
+[data-bs-theme="dark"] main :is(.callout-question, .admonition.question) {
+  --flexoki-admonition-background: var(--flexoki-yellow-950);
+}
+
+[data-bs-theme="dark"] main :is(
+  .alert-warning,
+  .callout-warning,
+  .callout-caution,
+  .admonition.warning
+) {
+  --flexoki-admonition-background: var(--flexoki-orange-950);
+}
+
+[data-bs-theme="dark"] main :is(.callout-failure, .admonition.failure) {
+  --flexoki-admonition-background: var(--flexoki-red-950);
+}
+
+[data-bs-theme="dark"] main :is(
+  .alert-danger,
+  .callout-danger,
+  .callout-important,
+  .admonition.danger
+) {
+  --flexoki-admonition-background: var(--flexoki-red-900);
+}
+
+[data-bs-theme="dark"] main :is(.callout-bug, .admonition.bug) {
+  --flexoki-admonition-background: var(--flexoki-magenta-950);
+}
+
+[data-bs-theme="dark"] main :is(.callout-example, .admonition.example) {
+  --flexoki-admonition-background: var(--flexoki-purple-950);
+}
+
+[data-bs-theme="dark"] main :is(.alert-secondary, .callout-quote, .admonition.quote) {
+  --flexoki-admonition-background: var(--flexoki-900);
+}
+
+:is(
+  .btn-secondary,
+  .btn-outline-secondary,
+  .btn-light,
+  .btn-outline-light,
+  .btn-dark,
+  .btn-outline-dark
+) {
+  --bs-btn-hover-color: var(--flexoki-tx);
+  --bs-btn-hover-bg: var(--flexoki-accent-subtle);
+  --bs-btn-hover-border-color: var(--flexoki-accent);
+  --bs-btn-focus-shadow-rgb: var(--flexoki-accent-rgb);
+}
+
+.btn-primary {
+  --bs-btn-color: var(--flexoki-bg);
+  --bs-btn-bg: var(--flexoki-primary);
+  --bs-btn-border-color: var(--flexoki-primary);
+  --bs-btn-hover-color: var(--flexoki-bg);
+  --bs-btn-hover-bg: var(--flexoki-accent);
+  --bs-btn-hover-border-color: var(--flexoki-accent);
+  --bs-btn-active-color: var(--flexoki-paper);
+  --bs-btn-active-bg: var(--flexoki-accent-active);
+  --bs-btn-active-border-color: var(--flexoki-accent-active);
+  --bs-btn-focus-shadow-rgb: var(--flexoki-accent-rgb);
+}
+
+[data-bs-theme="dark"] .btn-primary {
+  --bs-btn-color: var(--flexoki-bg);
+  --bs-btn-bg: var(--flexoki-primary);
+  --bs-btn-border-color: var(--flexoki-primary);
+  --bs-btn-hover-color: var(--flexoki-black);
+  --bs-btn-hover-bg: var(--flexoki-accent);
+  --bs-btn-hover-border-color: var(--flexoki-accent);
+  --bs-btn-active-color: var(--flexoki-black);
+  --bs-btn-active-bg: var(--flexoki-accent-active);
+  --bs-btn-active-border-color: var(--flexoki-accent-active);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--flexoki-primary);
+  --bs-btn-border-color: var(--flexoki-primary);
+  --bs-btn-hover-color: var(--flexoki-bg);
+  --bs-btn-hover-bg: var(--flexoki-accent);
+  --bs-btn-hover-border-color: var(--flexoki-accent);
+}
+
+.form-control,
+.form-select {
+  color: var(--flexoki-tx);
+  background-color: var(--flexoki-bg-2);
+  border-color: var(--flexoki-ui);
+}
+
+.form-control:hover,
+.form-select:hover {
+  border-color: var(--flexoki-ui-2);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--flexoki-accent);
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--flexoki-accent) 20%, transparent);
+}
+
+.badge.text-bg-primary,
+.bg-primary {
+  color: var(--flexoki-bg) !important;
+  background-color: var(--flexoki-primary) !important;
+}
+
+[data-bs-theme="dark"] :is(.badge.text-bg-primary, .bg-primary) {
+  color: var(--flexoki-bg) !important;
+  background-color: var(--flexoki-primary) !important;
+}
+
+footer {
+  color: var(--flexoki-tx-2);
+  font-size: $flexoki-interface-font-size;
+  line-height: $flexoki-interface-line-height;
+  letter-spacing: -0.005em;
+  border-top-color: var(--flexoki-ui);
+}
+
+@if not $flexoki-footer-credit {
+  .flexokidown-credit {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a,
+  .btn,
+  .nav-link,
+  .form-control,
+  .form-select {
+    transition-duration: 120ms;
+  }
+}

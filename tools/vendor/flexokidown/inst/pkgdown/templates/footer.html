@@ -1,0 +1,265 @@
+{{#footer}}
+<div class="pkgdown-footer-left">
+  {{#left}}{{{.}}}{{/left}}
+</div>
+
+<div class="pkgdown-footer-right">
+  {{#right}}{{{.}}}{{/right}}
+</div>
+{{/footer}}
+
+<script>
+document.querySelectorAll(".flexokidown-credit").forEach(function(credit) {
+  const pkgdownVersion = credit.previousSibling;
+
+  if (pkgdownVersion && pkgdownVersion.nodeType === 3) {
+    const text = pkgdownVersion.textContent;
+    const period = text.lastIndexOf(".");
+
+    if (period !== -1) {
+      pkgdownVersion.textContent = text.slice(0, period) + text.slice(period + 1);
+    }
+  }
+});
+
+window.addEventListener("DOMContentLoaded", function() {
+  const cycleEnabled = window.getComputedStyle(document.documentElement)
+    .getPropertyValue("--flexoki-light-switch-cycle")
+    .trim();
+
+  if (cycleEnabled !== "1") {
+    return;
+  }
+
+  const switcher = document.getElementById("dropdown-lightswitch");
+  const menu = document.querySelector(
+    '.navbar .dropdown-menu[aria-labelledby="dropdown-lightswitch"]'
+  );
+  const modes = ["light", "dark", "auto"];
+  const toggles = menu
+    ? Array.from(menu.querySelectorAll("[data-bs-theme-value]"))
+    : [];
+
+  if (!switcher || !menu || toggles.length !== modes.length) {
+    return;
+  }
+
+  const item = switcher.closest(".nav-item");
+
+  if (item) {
+    item.classList.remove("dropdown");
+    item.classList.add("flexokidown-theme-cycle-item");
+  }
+
+  switcher.classList.remove("dropdown-toggle");
+  switcher.classList.add("flexokidown-theme-cycle");
+  switcher.removeAttribute("data-bs-toggle");
+  switcher.removeAttribute("aria-expanded");
+  switcher.removeAttribute("aria-haspopup");
+  menu.hidden = true;
+
+  const labelFor = function(mode) {
+    return mode.charAt(0).toUpperCase() + mode.slice(1);
+  };
+
+  const currentMode = function() {
+    const stored = window.localStorage.getItem("theme");
+
+    if (modes.indexOf(stored) !== -1) {
+      return stored;
+    }
+
+    const active = toggles.find(function(toggle) {
+      return toggle.getAttribute("aria-pressed") === "true";
+    });
+
+    if (active) {
+      return active.getAttribute("data-bs-theme-value");
+    }
+
+    return document.documentElement.getAttribute("data-bs-theme") || "light";
+  };
+
+  const nextMode = function(mode) {
+    const index = modes.indexOf(mode);
+    return modes[(index + 1) % modes.length];
+  };
+
+  const updateButton = function(mode) {
+    const next = nextMode(mode);
+    const label = "Switch to " + labelFor(next) + " mode";
+
+    switcher.setAttribute("aria-label", label);
+    switcher.setAttribute("title", label);
+    switcher.setAttribute("data-flexokidown-theme-value", mode);
+  };
+
+  updateButton(currentMode());
+
+  switcher.addEventListener("click", function(event) {
+    event.preventDefault();
+
+    const keyboardActivation = event.detail === 0;
+    const next = nextMode(currentMode());
+    const nextToggle = toggles.find(function(toggle) {
+      return toggle.getAttribute("data-bs-theme-value") === next;
+    });
+
+    if (!nextToggle) {
+      return;
+    }
+
+    nextToggle.click();
+
+    if (!keyboardActivation) {
+      switcher.blur();
+    }
+
+    updateButton(next);
+  });
+});
+
+document.querySelectorAll(
+  "div.sourceCode[hl_lines], div.sourceCode[data-hl_lines]"
+).forEach(function(block) {
+  const code = block.querySelector("pre > code");
+
+  if (!code) {
+    return;
+  }
+
+  const lines = Array.from(code.children).filter(function(child) {
+    return child.tagName === "SPAN";
+  });
+  const requestedLines = (
+    block.getAttribute("hl_lines") ||
+    block.getAttribute("data-hl_lines") ||
+    ""
+  ).trim();
+
+  if (lines.length === 0 || requestedLines === "") {
+    return;
+  }
+
+  let hasHighlightedLines = false;
+
+  requestedLines.split(/\s+/).forEach(function(request) {
+    const range = request.match(/^([1-9]\d*)(?:-([1-9]\d*))?/);
+
+    if (!range || range[0] !== request) {
+      return;
+    }
+
+    const first = Number(range[1]);
+    const last = range[2] ? Number(range[2]) : first;
+
+    if (!Number.isSafeInteger(first) ||
+        !Number.isSafeInteger(last) ||
+        last < first ||
+        first > lines.length) {
+      return;
+    }
+
+    for (let line = first; line <= Math.min(last, lines.length); line += 1) {
+      lines[line - 1].classList.add("flexokidown-highlighted-line");
+      hasHighlightedLines = true;
+    }
+  });
+
+  if (hasHighlightedLines) {
+    code.classList.add("flexokidown-highlighted-code");
+  }
+});
+
+const flexokidownMobileNavbar = window.matchMedia("(max-width: 991.98px)");
+
+document.addEventListener("click", function(event) {
+  const navbar = document.querySelector(".navbar");
+  const expandedMenu = navbar && navbar.querySelector(".navbar-collapse.show");
+
+  if (!flexokidownMobileNavbar.matches ||
+      !expandedMenu ||
+      navbar.contains(event.target) ||
+      !window.bootstrap ||
+      !window.bootstrap.Collapse) {
+    return;
+  }
+
+  window.bootstrap.Collapse
+    .getOrCreateInstance(expandedMenu, { toggle: false })
+    .hide();
+});
+
+window.addEventListener("load", function() {
+  const toc = document.getElementById("toc");
+  const tocEnhanced = window.getComputedStyle(document.documentElement)
+    .getPropertyValue("--flexoki-toc-enhanced")
+    .trim();
+
+  if (!toc || tocEnhanced !== "1") {
+    return;
+  }
+
+  let activeIndex = -1;
+
+  const linkIsActive = function(link) {
+    const item = link.closest("li");
+    return link.classList.contains("active") ||
+      (item !== null && item.classList.contains("active"));
+  };
+
+  const updatePassedHeadings = function() {
+    const links = Array.from(toc.querySelectorAll("a.nav-link"));
+    let observedActiveIndex = -1;
+
+    links.forEach(function(link, index) {
+      if (linkIsActive(link)) {
+        observedActiveIndex = index;
+      }
+    });
+
+    if (observedActiveIndex >= 0) {
+      activeIndex = observedActiveIndex;
+    } else if (activeIndex >= links.length) {
+      activeIndex = -1;
+    }
+
+    if (activeIndex >= 0) {
+      links.slice(0, activeIndex).forEach(function(link) {
+        link.classList.add("flexokidown-passed");
+      });
+    }
+    links.slice(Math.max(activeIndex, 0)).forEach(function(link) {
+      link.classList.remove("flexokidown-passed");
+    });
+    links.forEach(function(link, index) {
+      link.classList.toggle("flexokidown-current", index === activeIndex);
+    });
+  };
+
+  const observer = new MutationObserver(function(mutations) {
+    const scrollspyChanged = mutations.some(function(mutation) {
+      if (mutation.type === "childList") {
+        return true;
+      }
+
+      const oldClasses = (mutation.oldValue || "").split(/\s+/);
+      const wasActive = oldClasses.indexOf("active") !== -1;
+      const isActive = mutation.target.classList.contains("active");
+      return wasActive !== isActive;
+    });
+
+    if (scrollspyChanged) {
+      updatePassedHeadings();
+    }
+  });
+  observer.observe(toc, {
+    attributes: true,
+    attributeFilter: ["class"],
+    attributeOldValue: true,
+    childList: true,
+    subtree: true
+  });
+  updatePassedHeadings();
+});
+</script>

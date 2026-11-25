@@ -1,0 +1,40 @@
+title: updoc
+url: https://leightonpayne.github.io/updoc
+
+development:
+  mode: auto
+
+template:
+  package: flexokidown
+  bslib:
+    flexoki-light-switch-style: cycle
+    flexoki-external-link-icons: true
+
+navbar:
+  structure:
+    left: [get_started, configuration, reference, news]
+    right: [search, lightswitch]
+  components:
+    get_started:
+      text: Get started
+      href: articles/get-started.html
+    configuration:
+      text: Options
+      href: articles/configuration.html
+
+articles:
+- title: Guides
+  navbar: ~
+  contents:
+  - articles/get-started
+  - articles/configuration
+
+reference:
+- title: Preview
+  contents:
+  - serve
+  - preview
+- title: Check and build
+  contents:
+  - check
+  - build

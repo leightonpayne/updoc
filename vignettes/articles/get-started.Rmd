@@ -1,0 +1,121 @@
+---
+title: "Get started with updoc"
+description: "Preview your pkgdown site as you edit, then build it to publish."
+output: rmarkdown::html_document
+---
+
+Writing package docs usually means saving a file, running `pkgdown::build_site()`,
+waiting, and refreshing your browser. updoc handles that loop for you: edit your
+package, hit save, and your preview updates on its own.
+
+## Install and start
+
+Install updoc from GitHub:
+
+```r
+# install.packages("pak")
+pak::pak("leightonpayne/updoc")
+```
+
+updoc uses the Pandoc installation found by rmarkdown (2.10.1 or newer). If you
+need to use a different copy, see the [Pandoc options](configuration.html#pandoc).
+
+From inside your package directory, start the preview server:
+
+```r
+updoc::serve()
+```
+
+Your browser opens to the preview. (If your package already has a built site,
+updoc serves a copy right away while the first fresh build runs.) Press **Ctrl+C**
+in R whenever you want to stop.
+
+If you'd rather run the preview from a separate terminal so your R session stays
+free, pass `browse = TRUE` because `Rscript` isn't interactive:
+
+```sh
+Rscript -e "updoc::serve(browse = TRUE)"
+```
+
+## Edit and save as usual
+
+Leave the preview running and work on your package normally. Whenever you save a
+file, updoc figures out what needs rebuilding:
+
+- **Vignettes and articles:** rebuilds just the file you edited.
+- **Roxygen comments in `R/`:** regenerates help pages in the background and
+  rebuilds the affected reference pages.
+- **`README.Rmd`, `README.md`, or `NEWS.md`:** renders `README.Rmd` if needed
+  and updates the home or news page.
+- **Site CSS, assets, or logo:** refreshes site assets without rebuilding every
+  page.
+- **R code, `DESCRIPTION`, `_pkgdown.yml`, or deleted files:** runs a full site
+  rebuild so nothing gets out of sync.
+
+Everything happens in a temporary copy of your package, so previewing never
+modifies your `man/` files, `NAMESPACE`, `README.md`, or `docs/` folder.
+
+## Watching builds in the browser
+
+The small popup at the bottom of the page tracks what updoc is doing, with Doc
+(the hexagonal mascot) changing state as builds run:
+
+- While a build is running, the popup shows live progress.
+- If a build hits warnings or fails, the popup opens with the error and source
+  context so you can spot the problem quickly. Your last working preview stays
+  available while you fix it and save again.
+- You can minimize warnings or errors to get them out of the way, and click the
+  **Watching for changes** pill anytime to open the manual **Rebuild** button.
+
+## Keep your R console free
+
+`serve()` holds onto the R console until you press Ctrl+C. If you want to keep
+running R commands while your preview updates in the background, use `preview()`
+instead:
+
+```r
+site <- updoc::preview()
+
+site                      # Print a quick status summary
+site$status()             # Inspect build status, warnings, errors, and log path
+site$wait()               # Wait until the current build finishes
+site$rebuild()            # Trigger a rebuild manually
+site$rebuild(full = TRUE) # Force a full site rebuild
+site$open()               # Open the preview in your browser again
+site$stop()               # Stop watching and shut down the server
+```
+
+Both `serve()` and `preview()` accept the same
+[configuration options](configuration.html).
+
+## Check without modifying files
+
+If you want a quick one-shot verification in CI, a script, or an AI agent loop
+without leaving a server running or changing files in your package, run:
+
+```r
+updoc::check()
+```
+
+Like a preview, `check()` validates your sources and builds the site in a
+temporary copy, then prints a summary and exits non-zero if anything failed.
+Pass `format = "json"` for machine-readable output (see
+[Automation and AI agents](configuration.html#automation-and-ai-agents)).
+
+## Build your site to publish
+
+Because previews work in a temporary copy, they don't update the files you check
+in or deploy. When you're ready to build the real site, run:
+
+```r
+updoc::build()
+```
+
+This updates your package's generated roxygen docs, renders `README.Rmd` to
+`README.md` if you have one, and writes the finished site to your pkgdown output
+folder (usually `docs/`). It doesn't upload anything for you, so publish that
+folder using your normal hosting setup.
+
+See the [`build()` reference](../reference/build.html) if you want to write to a
+custom output folder, run a `lazy = TRUE` build, or skip regenerating roxygen
+documentation.

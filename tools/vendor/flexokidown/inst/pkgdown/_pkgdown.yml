@@ -1,0 +1,53 @@
+template:
+  bootstrap: 5
+  light-switch: true
+  theme: pygments
+  theme-dark: pygments
+  bslib:
+    bg: "#fffcf0"
+    fg: "#100f0f"
+    primary: "#100f0f"
+    secondary: "#6f6e69"
+    success: "#66800b"
+    info: "#205ea6"
+    warning: "#ad8301"
+    danger: "#af3029"
+    light: "#f2f0e5"
+    dark: "#282726"
+    base_font: system-ui
+    heading_font: system-ui
+    font-size-base: "0.875rem"
+    line-height-base: 1.4
+    border-color: "#e6e4d9"
+    secondary-bg: "#f2f0e5"
+    tertiary-bg: "#e6e4d9"
+    code-color: "#100f0f"
+    code-bg: "#f2f0e5"
+    link-color: "#100f0f"
+    link-hover-color: "#24837b"
+    navbar-light-bg: "#fffcf0"
+    navbar-dark-bg: "#100f0f"
+    body-bg-dark: "#100f0f"
+    body-color-dark: "#cecdc3"
+    headings-color: "#100f0f"
+    headings-color-dark: "#cecdc3"
+    secondary-bg-dark: "#1c1b1a"
+    tertiary-bg-dark: "#282726"
+    emphasis-color-dark: "#fffcf0"
+    border-color-dark: "#282726"
+    link-color-dark: "#cecdc3"
+    link-hover-color-dark: "#3aa99f"
+    code-color-dark: "#cecdc3"
+    enable-shadows: false
+    border-radius: "0.25rem"
+    border-radius-sm: "0.2rem"
+    border-radius-lg: "0.35rem"
+    headings-font-weight: 650
+    font-weight-semibold: 650
+
+footer:
+  structure:
+    left: developed_by
+    right: [built_with, styled_with]
+  components:
+    styled_with: '<span class="flexokidown-credit">&vert; Styled with <a href="https://leightonpayne.github.io/flexokidown/">flexokidown</a></span>'
