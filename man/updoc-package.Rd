@@ -34,9 +34,9 @@ Authors:
 
 Other contributors:
 \itemize{
-  \item shadcn (Adapted preview interface patterns and design tokens) [contributor, copyright holder]
-  \item Lucide Icons and Contributors (Preview icons) [contributor, copyright holder]
-  \item Cole Bemis (Feather-derived preview icon) [contributor, copyright holder]
+  \item shadcn (Adapted preview interface patterns and design tokens) [copyright holder]
+  \item Lucide Icons and Contributors (Preview icons) [copyright holder]
+  \item Cole Bemis (Feather-derived preview icon) [copyright holder]
 }
 
 }

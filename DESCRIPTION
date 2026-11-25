@@ -8,11 +8,11 @@ Authors@R: c(
       role = c("aut", "cre", "cph"),
       comment = c(ORCID = "0000-0003-2305-6827")
     ),
-    person("shadcn", role = c("ctb", "cph"),
+    person("shadcn", role = "cph",
       comment = "Adapted preview interface patterns and design tokens"),
-    person("Lucide Icons and Contributors", role = c("ctb", "cph"),
+    person("Lucide Icons and Contributors", role = "cph",
       comment = "Preview icons"),
-    person("Cole", "Bemis", role = c("ctb", "cph"),
+    person("Cole", "Bemis", role = "cph",
       comment = "Feather-derived preview icon")
   )
 Description: Serves live previews of 'pkgdown' sites while you edit your
