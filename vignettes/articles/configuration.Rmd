@@ -92,6 +92,16 @@ options(updoc.theme = "inverse")
 An explicit `theme` argument always takes priority; with neither set, updoc uses
 `"auto"`.
 
+Try each theme on the demo popup at the bottom of this page (toggle the site's
+light/dark switch in the navbar to compare `"auto"` and `"inverse"`):
+
+<div class="updoc-demo-controls" data-updoc-demo="themes" role="group" aria-label="Preview popup theme">
+<button type="button" class="updoc-demo-btn" data-updoc-demo-theme="auto" aria-pressed="true">Auto</button>
+<button type="button" class="updoc-demo-btn" data-updoc-demo-theme="inverse" aria-pressed="false">Inverse</button>
+<button type="button" class="updoc-demo-btn" data-updoc-demo-theme="light" aria-pressed="false">Light</button>
+<button type="button" class="updoc-demo-btn" data-updoc-demo-theme="dark" aria-pressed="false">Dark</button>
+</div>
+
 ## Other options
 
 | Option | What it does |

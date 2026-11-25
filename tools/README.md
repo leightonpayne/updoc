@@ -15,7 +15,7 @@ UPDOC_INTEGRATION_TESTS=true R CMD check --as-cran updoc_0.1.0.tar.gz
 
 ## Mascot and browser checks
 
-Edit the mascot source in `inst/mascot/`, then run
+Edit the mascot source in `inst/mascot/` or the browser popup in `inst/preview/`, then run
 `node tools/generate-doc-assets.cjs` to update the website and README copies
 (keep the generated-block markers in the stylesheets intact).
 

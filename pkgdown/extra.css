@@ -30,3 +30,47 @@
 @media (max-width: 540px) {
   .doc-intro { flex-direction: column; gap: .75rem; }
 }
+.updoc-demo-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.75rem 0 1.25rem;
+}
+.updoc-demo-btn {
+  appearance: none;
+  border: 1px solid var(--flexoki-ui-2, #dad8ce);
+  border-radius: 0.35rem;
+  background: var(--flexoki-bg-2, #f2f0e5);
+  color: var(--flexoki-tx, #100f0f);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+.updoc-demo-btn:hover:not(:disabled):not([aria-pressed="true"]) {
+  border-color: var(--flexoki-accent, #205ea6);
+  background: var(--flexoki-accent-subtle, #c6dde8);
+  color: var(--flexoki-accent, #205ea6);
+}
+.updoc-demo-btn[aria-pressed="true"] {
+  border-color: var(--flexoki-primary, #100f0f);
+  background: var(--flexoki-primary, #100f0f);
+  color: var(--flexoki-bg, #fffcf0);
+}
+.updoc-demo-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.updoc-demo-note {
+  margin: 0.35rem 0 0;
+  width: 100%;
+  color: var(--flexoki-tx-2, #6f6e69);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+[data-updoc-demo="true"] footer {
+  padding-bottom: 4.5rem;
+}

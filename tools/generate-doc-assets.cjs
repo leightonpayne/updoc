@@ -101,4 +101,16 @@ output("readme-mascots-still.svg", readmeStillMascots(), figures);
 for (const name of ["doc.js", "doc.css"]) {
   output(name, fs.readFileSync(path.resolve(__dirname, "../inst/mascot", name), "utf8"));
 }
+const panelSource = name => {
+  const absolute = path.resolve(__dirname, "..", name);
+  return generatedSources.get(absolute) || fs.readFileSync(absolute, "utf8");
+};
+const panelCSS = [
+  panelSource("inst/mascot/doc.css"),
+  panelSource("inst/preview/panel.css")
+].join("\n");
+output("panel-css.js", `window.__updocDemoCSS = ${JSON.stringify(panelCSS)};\n`);
+for (const name of ["panel-primitives.js", "panel.js"]) {
+  output(name, fs.readFileSync(path.resolve(__dirname, "../inst/preview", name), "utf8"));
+}
 if (stale) process.exitCode = 1;

@@ -67,6 +67,16 @@ The small popup at the bottom of the page tracks what updoc is doing, with Doc
 - You can minimize warnings or errors to get them out of the way, and click the
   **Watching for changes** pill anytime to open the manual **Rebuild** button.
 
+Try each state on the demo popup at the bottom of this page:
+
+<div class="updoc-demo-controls" data-updoc-demo="states" role="group" aria-label="Preview popup states">
+<button type="button" class="updoc-demo-btn" data-updoc-demo-state="ready" aria-pressed="true">Ready</button>
+<button type="button" class="updoc-demo-btn" data-updoc-demo-state="building" aria-pressed="false">Building</button>
+<button type="button" class="updoc-demo-btn" data-updoc-demo-state="warning" aria-pressed="false">Warning</button>
+<button type="button" class="updoc-demo-btn" data-updoc-demo-state="error" aria-pressed="false">Error</button>
+<button type="button" class="updoc-demo-btn" data-updoc-demo-state="disconnected" aria-pressed="false">Disconnected</button>
+</div>
+
 ## Keep your R console free
 
 `serve()` holds onto the R console until you press Ctrl+C. If you want to keep

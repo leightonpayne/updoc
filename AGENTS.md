@@ -26,7 +26,7 @@ build checks for `pkgdown` sites.
 
 - **Never mutate the user's package during `serve()`, `preview()`, or `check()`.** Always build in a mirrored temporary copy; only `build()` writes to `man/`, `README.md`, or `docs/`.
 - **Never hand-edit `man/*.Rd` or `NAMESPACE`.** Edit roxygen comments in `R/` and run `roxygen2::roxygenise()`.
-- **Never hand-edit generated mascot copies** in `pkgdown/assets/doc-assets/` or `man/figures/`. Edit `inst/mascot/` and run `node tools/generate-doc-assets.cjs` (preserving generated-block markers in CSS).
+- **Never hand-edit generated mascot or preview copies** in `pkgdown/assets/doc-assets/` or `man/figures/`. Edit `inst/mascot/` or `inst/preview/` and run `node tools/generate-doc-assets.cjs` (preserving generated-block markers in CSS).
 - **Keep `R CMD check --as-cran` clean** (0 errors, 0 warnings; only the expected "New submission" note).
 - **Preserve licenses and notices** in `inst/COPYRIGHTS` and `tools/vendor/flexokidown/`.
 
