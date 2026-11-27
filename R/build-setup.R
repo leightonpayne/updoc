@@ -211,7 +211,7 @@ validate_changed_r_sources <- function(changed, root) {
   validate_all <- any(relative %in% c("<initial>", "<rebuild>"))
   paths <- if (validate_all) {
     directory <- fs::path(root, "R")
-    if (fs::dir_exists(directory)) {
+    if (dir.exists(directory)) {
       candidates <- fs::dir_ls(
         directory,
         recurse = TRUE,
@@ -477,7 +477,7 @@ validate_changed_front_matter <- function(changed, root) {
   validate_all <- any(relative %in% c("<initial>", "<rebuild>"))
   paths <- if (validate_all) {
     directory <- fs::path(root, "vignettes")
-    if (fs::dir_exists(directory)) {
+    if (dir.exists(directory)) {
       fs::dir_ls(directory, recurse = TRUE, type = "file", fail = FALSE)
     } else character()
   } else {

@@ -355,7 +355,7 @@ stop_state <- function(state) {
     try(state$server$stop(), silent = TRUE)
   }
   state$server <- NULL
-  if (!is.null(state$preview_dir) && fs::dir_exists(state$preview_dir)) {
+  if (!is.null(state$preview_dir) && dir.exists(state$preview_dir)) {
     try(fs::dir_delete(state$preview_dir), silent = TRUE)
   }
   state$preview_dir <- NULL

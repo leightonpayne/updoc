@@ -214,12 +214,12 @@ publish_preview_delta <- function(state, delta) {
             fs::dir_create(fs::path_dir(target))
             fs::file_copy(fs::path(backup, path), target, overwrite = TRUE)
           } else if (fs::file_exists(target) || fs::is_link(target)) {
-            fs::file_delete(target)
+            remove_path_safe(target)
           }
         }
       }
       # A failed restoration must leave its backup available.
-      if (fs::dir_exists(backup)) fs::dir_delete(backup)
+      if (dir.exists(backup)) fs::dir_delete(backup)
     },
     add = TRUE
   )
@@ -237,7 +237,7 @@ publish_preview_delta <- function(state, delta) {
 
   for (path in remove) {
     target <- fs::path(state$site_dir, path)
-    if (fs::file_exists(target) || fs::is_link(target)) fs::file_delete(target)
+    if (fs::file_exists(target) || fs::is_link(target)) remove_path_safe(target)
   }
   for (path in names(write)) {
     source <- fs::path(state$build_dir, path)
@@ -255,9 +255,9 @@ publish_preview_delta <- function(state, delta) {
     temporary <- tempfile("publish-", tmpdir = fs::path_dir(target))
     fs::dir_create(fs::path_dir(target))
     fs::file_copy(source, temporary, overwrite = TRUE)
-    if (fs::file_exists(target) || fs::is_link(target)) fs::file_delete(target)
+    if (fs::file_exists(target) || fs::is_link(target)) remove_path_safe(target)
     if (!file.rename(temporary, target)) {
-      if (fs::file_exists(temporary)) fs::file_delete(temporary)
+      if (fs::file_exists(temporary)) remove_path_safe(temporary)
       updoc_abort(sprintf(
         "Could not publish generated preview output: %s",
         path
@@ -273,27 +273,23 @@ publish_preview <- function(state, delta = NULL) {
   if (
     is.null(state$preview_dir) ||
       is.null(state$build_dir) ||
-      !fs::dir_exists(state$build_dir)
+      !dir.exists(state$build_dir)
   ) {
     updoc_abort("The preview worker did not produce a site directory.")
   }
   if (
-    !is.null(delta) &&
-      !is.null(state$site_dir) &&
-      fs::dir_exists(state$site_dir)
+    !is.null(delta) && !is.null(state$site_dir) && dir.exists(state$site_dir)
   ) {
     return(publish_preview_delta(state, delta))
   }
   generation <- state$publish_generation + 1L
   target <- fs::path(state$preview_dir, sprintf("site-%d", generation))
-  if (fs::dir_exists(target)) fs::dir_delete(target)
-  fs::dir_copy(state$build_dir, target)
+  if (dir.exists(target)) fs::dir_delete(target)
+  copy_directory_safe(state$build_dir, target)
 
   previous <- state_publish_site(state, target)
   if (
-    !is.null(previous) &&
-      !identical(previous, target) &&
-      fs::dir_exists(previous)
+    !is.null(previous) && !identical(previous, target) && dir.exists(previous)
   ) {
     fs::dir_delete(previous)
   }

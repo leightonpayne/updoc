@@ -14,7 +14,7 @@ build_article_direct <- function(pkg, article, override) {
     pkg$dst_path,
     paste0(tools::file_path_sans_ext(output), "_files")
   )
-  if (fs::dir_exists(support)) fs::dir_delete(support)
+  if (dir.exists(support)) fs::dir_delete(support)
 
   messages <- character()
   error <- tryCatch(

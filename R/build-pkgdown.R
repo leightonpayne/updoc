@@ -92,7 +92,7 @@ files_signature <- function(files, root) {
 
 documentation_signature <- function(root) {
   man <- fs::path(root, "man")
-  rd <- if (fs::dir_exists(man)) {
+  rd <- if (dir.exists(man)) {
     fs::dir_ls(man, type = "file", glob = "*.Rd", fail = FALSE)
   } else character()
   files <- c(fs::path(root, c("DESCRIPTION", "NAMESPACE")), rd)
@@ -132,7 +132,7 @@ record_publish_changes <- function(state, before, after) {
 section_output_files <- function(plan, pkg, site_dir) {
   files <- character()
   scan_directory <- function(directory) {
-    if (!fs::dir_exists(directory)) return(character())
+    if (!dir.exists(directory)) return(character())
     display_paths(
       fs::dir_ls(
         directory,
@@ -158,7 +158,7 @@ section_output_files <- function(plan, pkg, site_dir) {
       ) {
         files <- c(files, fs::path("reference", topic_outputs))
         figures <- fs::path(site_dir, "reference", "figures")
-        if (fs::dir_exists(figures)) {
+        if (dir.exists(figures)) {
           stems <- tools::file_path_sans_ext(topic_outputs)
           figure_files <- fs::dir_ls(
             figures,
@@ -329,7 +329,7 @@ checked_preview_output_dir <- function(state, pkg) {
     ancestor <- path
     while (
       !fs::file_exists(ancestor) &&
-        !fs::dir_exists(ancestor) &&
+        !dir.exists(ancestor) &&
         !fs::is_link(ancestor)
     ) {
       ancestor <- as.character(fs::path_dir(ancestor))
@@ -357,10 +357,10 @@ run_pkgdown_site <- function(state, plan, override) {
   state$pkgdown <- pkg
   state$site_dir <- site_dir
   # Full builds remove stale output left by deleted sources.
-  if (!isTRUE(plan$lazy) && fs::dir_exists(pkg$dst_path)) {
+  if (!isTRUE(plan$lazy) && dir.exists(pkg$dst_path)) {
     fs::dir_delete(pkg$dst_path)
   }
-  destination_empty <- !fs::dir_exists(pkg$dst_path) ||
+  destination_empty <- !dir.exists(pkg$dst_path) ||
     !length(fs::dir_ls(pkg$dst_path, all = TRUE, fail = FALSE))
 
   if (!isTRUE(plan$lazy) || destination_empty) {
@@ -506,7 +506,7 @@ run_pkgdown <- function(state, plan) {
         baseline <- if (
           !is.null(state$publish_delta) &&
             !is.null(state$published_site_dir) &&
-            fs::dir_exists(state$published_site_dir)
+            dir.exists(state$published_site_dir)
         ) {
           state$published_site_dir
         } else state$site_dir
@@ -683,7 +683,7 @@ refresh_shared_indexes <- function(state) {
   baseline <- if (
     !is.null(state$publish_delta) &&
       !is.null(state$published_site_dir) &&
-      fs::dir_exists(state$published_site_dir)
+      dir.exists(state$published_site_dir)
   ) {
     state$published_site_dir
   } else site_dir
