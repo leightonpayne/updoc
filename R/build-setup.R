@@ -1,5 +1,10 @@
-build_plan <- function(strategy, changed, force_full = FALSE,
-                       deleted = FALSE, documentation_only = FALSE) {
+build_plan <- function(
+  strategy,
+  changed,
+  force_full = FALSE,
+  deleted = FALSE,
+  documentation_only = FALSE
+) {
   strategy <- match.arg(strategy, c("smart", "lazy", "full"))
   rel <- gsub("\\\\", "/", changed)
   prebuild_all <- isTRUE(force_full) ||
@@ -7,18 +12,30 @@ build_plan <- function(strategy, changed, force_full = FALSE,
   needs_document <- prebuild_all || any(startsWith(rel, "R/"))
   needs_readme <- prebuild_all || "README.Rmd" %in% rel
   site_plan <- function(lazy, reason) {
-    list(kind = "site", targets = character(), lazy = lazy,
-         reference_lazy = lazy, articles_lazy = lazy,
-         reference_files = character(), article_names = character(),
-         article_index = TRUE,
-         reference_index_only = FALSE, reference_unscoped = FALSE,
-         document = needs_document, readme = needs_readme, reason = reason)
+    list(
+      kind = "site",
+      targets = character(),
+      lazy = lazy,
+      reference_lazy = lazy,
+      articles_lazy = lazy,
+      reference_files = character(),
+      article_names = character(),
+      article_index = TRUE,
+      reference_index_only = FALSE,
+      reference_unscoped = FALSE,
+      document = needs_document,
+      readme = needs_readme,
+      reason = reason
+    )
   }
 
   if (force_full || identical(strategy, "full") || isTRUE(deleted)) {
-    return(site_plan(FALSE, if (isTRUE(deleted)) {
-      "deleted source"
-    } else "full strategy"))
+    return(site_plan(
+      FALSE,
+      if (isTRUE(deleted)) {
+        "deleted source"
+      } else "full strategy"
+    ))
   }
   if (identical(strategy, "lazy")) {
     return(site_plan(TRUE, "lazy strategy"))
@@ -27,12 +44,19 @@ build_plan <- function(strategy, changed, force_full = FALSE,
   assets <- grepl("^pkgdown/(extra[^/]*|assets/|favicon/)", rel) |
     grepl("^man/figures/logo[.]", rel)
   r_source <- startsWith(rel, "R/")
-  structural <- rel %in% c("<initial>", "DESCRIPTION", "NAMESPACE",
-                           "_pkgdown.yml", "_pkgdown.yaml") |
+  structural <- rel %in%
+    c(
+      "<initial>",
+      "DESCRIPTION",
+      "NAMESPACE",
+      "_pkgdown.yml",
+      "_pkgdown.yaml"
+    ) |
     (r_source & !isTRUE(documentation_only)) |
     startsWith(rel, "data/") |
     startsWith(rel, "src/") |
-    (startsWith(rel, "pkgdown/") & !assets) | startsWith(rel, "inst/")
+    (startsWith(rel, "pkgdown/") & !assets) |
+    startsWith(rel, "inst/")
   if (any(structural)) {
     return(site_plan(FALSE, "structural source change"))
   }
@@ -55,19 +79,22 @@ build_plan <- function(strategy, changed, force_full = FALSE,
     reference_files = basename(rel[
       target == "reference" & grepl("[.]Rd$", rel)
     ]),
-    article_names = if (all(grepl(
-      "[.](Rmd|rmd|qmd)$", rel[target == "articles"]
-    ))) {
+    article_names = if (
+      all(grepl(
+        "[.](Rmd|rmd|qmd)$",
+        rel[target == "articles"]
+      ))
+    ) {
       sub(
-        "[.](Rmd|rmd|qmd)$", "",
+        "[.](Rmd|rmd|qmd)$",
+        "",
         sub("^vignettes/", "", rel[target == "articles"])
       )
     } else character(),
     article_index = TRUE,
     reference_index_only = FALSE,
     reference_unscoped = any(
-      target == "reference" & !startsWith(rel, "R/") &
-        !grepl("[.]Rd$", rel)
+      target == "reference" & !startsWith(rel, "R/") & !grepl("[.]Rd$", rel)
     ),
     document = needs_document,
     readme = needs_readme,
@@ -95,10 +122,13 @@ article_index_signature <- function(path) {
 }
 
 scope_article_index <- function(plan, changed, root, build_root) {
-  if (!identical(plan$kind, "sections") ||
+  if (
+    !identical(plan$kind, "sections") ||
       !"articles" %in% plan$targets ||
       !length(plan$article_names) ||
-      is.null(build_root) || identical(root, build_root)) {
+      is.null(build_root) ||
+      identical(root, build_root)
+  ) {
     return(plan)
   }
 
@@ -108,12 +138,16 @@ scope_article_index <- function(plan, changed, root, build_root) {
       grepl("[.](Rmd|rmd|qmd)$", relative)
   ]
   if (!length(articles)) return(plan)
-  plan$article_index <- any(vapply(articles, function(path) {
-    !identical(
-      article_index_signature(fs::path(root, path)),
-      article_index_signature(fs::path(build_root, path))
-    )
-  }, logical(1)))
+  plan$article_index <- any(vapply(
+    articles,
+    function(path) {
+      !identical(
+        article_index_signature(fs::path(root, path)),
+        article_index_signature(fs::path(build_root, path))
+      )
+    },
+    logical(1)
+  ))
   plan
 }
 
@@ -126,20 +160,27 @@ parsed_r_code <- function(path) {
 }
 
 validate_r_source <- function(path, root) {
-  if (!fs::file_exists(path) ||
-      !identical(tolower(fs::path_ext(path)), "r")) {
+  if (
+    !fs::file_exists(path) ||
+      !identical(tolower(fs::path_ext(path)), "r")
+  ) {
     return(invisible(TRUE))
   }
-  error <- tryCatch({
-    parse(path, keep.source = FALSE, encoding = "UTF-8")
-    NULL
-  }, error = function(condition) condition)
+  error <- tryCatch(
+    {
+      parse(path, keep.source = FALSE, encoding = "UTF-8")
+      NULL
+    },
+    error = function(condition) condition
+  )
   if (is.null(error)) return(invisible(TRUE))
 
   relative <- relative_to_root(path, root)
   first <- strsplit(conditionMessage(error), "\n", fixed = TRUE)[[1L]][[1L]]
   match <- regexec(
-    "^.*:([0-9]+):([0-9]+):[[:space:]]*(.*)$", first, perl = TRUE
+    "^.*:([0-9]+):([0-9]+):[[:space:]]*(.*)$",
+    first,
+    perl = TRUE
   )
   pieces <- regmatches(first, match)[[1L]]
   if (length(pieces) == 4L) {
@@ -172,13 +213,18 @@ validate_changed_r_sources <- function(changed, root) {
     directory <- fs::path(root, "R")
     if (fs::dir_exists(directory)) {
       candidates <- fs::dir_ls(
-        directory, recurse = TRUE, type = "file", fail = FALSE
+        directory,
+        recurse = TRUE,
+        type = "file",
+        fail = FALSE
       )
       candidates[tolower(fs::path_ext(candidates)) == "r"]
     } else character()
   } else {
-    changed[startsWith(relative, "R/") &
-              tolower(fs::path_ext(changed)) == "r"]
+    changed[
+      startsWith(relative, "R/") &
+        tolower(fs::path_ext(changed)) == "r"
+    ]
   }
   for (path in paths) validate_r_source(path, root)
   invisible(TRUE)
@@ -190,11 +236,15 @@ r_changes_are_documentation_only <- function(changed, root, build_root) {
   if (!any(r_changes) || is.null(build_root) || identical(root, build_root)) {
     return(FALSE)
   }
-  all(vapply(relative[r_changes], function(path) {
-    current <- parsed_r_code(fs::path(root, path))
-    previous <- parsed_r_code(fs::path(build_root, path))
-    !is.null(current) && !is.null(previous) && identical(current, previous)
-  }, logical(1)))
+  all(vapply(
+    relative[r_changes],
+    function(path) {
+      current <- parsed_r_code(fs::path(root, path))
+      previous <- parsed_r_code(fs::path(build_root, path))
+      !is.null(current) && !is.null(previous) && identical(current, previous)
+    },
+    logical(1)
+  ))
 }
 
 describe_build_plan <- function(plan, document = TRUE) {
@@ -204,11 +254,14 @@ describe_build_plan <- function(plan, document = TRUE) {
   }
   if (isTRUE(plan$readme)) targets <- c(targets, "README")
   if (identical(plan$kind, "site")) {
-    targets <- c(targets, if (isTRUE(plan$lazy)) {
-      "incremental site"
-    } else {
-      "full site"
-    })
+    targets <- c(
+      targets,
+      if (isTRUE(plan$lazy)) {
+        "incremental site"
+      } else {
+        "full site"
+      }
+    )
   } else {
     for (target in plan$targets) {
       label <- switch(
@@ -233,8 +286,12 @@ describe_build_plan <- function(plan, document = TRUE) {
   paste(unique(targets), collapse = ", ")
 }
 
-new_build_progress <- function(operation, target = NULL, current = NULL,
-                               total = NULL) {
+new_build_progress <- function(
+  operation,
+  target = NULL,
+  current = NULL,
+  total = NULL
+) {
   list(
     operation = as.character(operation)[[1L]],
     target = if (is.null(target) || !nzchar(target)) NULL else target,
@@ -263,19 +320,28 @@ format_build_progress <- function(progress, styled = FALSE) {
 write_build_progress <- function(path, progress) {
   if (is.null(path)) return(invisible(FALSE))
   temporary <- sprintf("%s.%d.tmp", path, Sys.getpid())
-  ok <- tryCatch({
-    saveRDS(progress, temporary)
-    if (.Platform$OS.type == "windows" && file.exists(path)) unlink(path)
-    if (!file.rename(temporary, path)) stop("Could not publish build progress")
-    TRUE
-  }, error = function(e) FALSE)
+  ok <- tryCatch(
+    {
+      saveRDS(progress, temporary)
+      if (.Platform$OS.type == "windows" && file.exists(path)) unlink(path)
+      if (!file.rename(temporary, path))
+        stop("Could not publish build progress")
+      TRUE
+    },
+    error = function(e) FALSE
+  )
   if (file.exists(temporary)) unlink(temporary)
   invisible(ok)
 }
 
-report_build_progress <- function(state, operation, target = NULL,
-                                  current = NULL, total = NULL,
-                                  announce = TRUE) {
+report_build_progress <- function(
+  state,
+  operation,
+  target = NULL,
+  current = NULL,
+  total = NULL,
+  announce = TRUE
+) {
   progress <- new_build_progress(operation, target, current, total)
   state$progress <- progress
   if (isTRUE(state$trace_enabled)) {
@@ -320,8 +386,10 @@ clear_build_progress <- function(state) {
 }
 
 validate_front_matter <- function(path, root) {
-  if (!fs::file_exists(path) ||
-      !tolower(fs::path_ext(path)) %in% c("rmd", "qmd", "md")) {
+  if (
+    !fs::file_exists(path) ||
+      !tolower(fs::path_ext(path)) %in% c("rmd", "qmd", "md")
+  ) {
     return(invisible(TRUE))
   }
   lines <- readLines(path, warn = FALSE, encoding = "UTF-8")
@@ -340,11 +408,14 @@ validate_front_matter <- function(path, root) {
 
   metadata <- rmarkdown::yaml_front_matter(path)
   title <- metadata$title
-  missing_title <- is.null(title) || !length(title) || is.na(title[[1L]]) ||
+  missing_title <- is.null(title) ||
+    !length(title) ||
+    is.na(title[[1L]]) ||
     !nzchar(trimws(as.character(title[[1L]])))
   if (missing_title) {
     updoc_warn(sprintf(
-      "YAML front matter in %s has no non-empty `title`.", relative
+      "YAML front matter in %s has no non-empty `title`.",
+      relative
     ))
   }
   validate_vignette_engines(lines, relative, root)
@@ -380,7 +451,9 @@ validate_vignette_engines <- function(lines, relative, root) {
       error = function(condition) {
         updoc_abort(sprintf(
           "Invalid vignette engine `%s` in %s: %s",
-          engine, relative, conditionMessage(condition)
+          engine,
+          relative,
+          conditionMessage(condition)
         ))
       }
     )
@@ -390,7 +463,9 @@ validate_vignette_engines <- function(lines, relative, root) {
           "Vignette engine `%s` in %s is not declared by DESCRIPTION's ",
           "`VignetteBuilder`; add `VignetteBuilder: %s`."
         ),
-        engine, relative, resolved$package
+        engine,
+        relative,
+        resolved$package
       ))
     }
   }

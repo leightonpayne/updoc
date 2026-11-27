@@ -18,20 +18,23 @@ build_article_direct <- function(pkg, article, override) {
 
   messages <- character()
   error <- tryCatch(
-    withCallingHandlers({
-      pkgdown::build_article(
-        article,
-        pkg = pkg,
-        lazy = FALSE,
-        new_process = FALSE,
-        override = override,
-        quiet = TRUE
-      )
-      NULL
-    }, message = function(condition) {
-      messages <<- c(messages, conditionMessage(condition))
-      invokeRestart("muffleMessage")
-    }),
+    withCallingHandlers(
+      {
+        pkgdown::build_article(
+          article,
+          pkg = pkg,
+          lazy = FALSE,
+          new_process = FALSE,
+          override = override,
+          quiet = TRUE
+        )
+        NULL
+      },
+      message = function(condition) {
+        messages <<- c(messages, conditionMessage(condition))
+        invokeRestart("muffleMessage")
+      }
+    ),
     error = function(condition) condition
   )
   if (is.null(error)) return(invisible(TRUE))
@@ -39,7 +42,9 @@ build_article_direct <- function(pkg, article, override) {
   output <- clean_diagnostic_text(messages)
   output_lines <- strsplit(output, "\n", fixed = TRUE)[[1L]]
   quitting <- grep(
-    "^Quitting from[[:space:]]+", output_lines, value = TRUE
+    "^Quitting from[[:space:]]+",
+    output_lines,
+    value = TRUE
   )
   message <- c(
     sprintf("Failed to render '%s'.", input),

@@ -29,9 +29,14 @@
 #'   build()
 #' }
 #' @export
-build <- function(pkg = ".", destination = NULL, document = TRUE,
-                  lazy = FALSE, quiet = FALSE,
-                  pandoc = getOption("updoc.pandoc", NULL)) {
+build <- function(
+  pkg = ".",
+  destination = NULL,
+  document = TRUE,
+  lazy = FALSE,
+  quiet = FALSE,
+  pandoc = getOption("updoc.pandoc", NULL)
+) {
   root <- package_root(pkg)
   check_flag(document, "document")
   check_flag(lazy, "lazy")
@@ -42,9 +47,16 @@ build <- function(pkg = ".", destination = NULL, document = TRUE,
   result <- tryCatch(
     run_updoc_build(
       "build_site_selected",
-      list(root = root, destination = destination, document = document,
-           lazy = lazy, quiet = quiet, override = override),
-      build_log, pandoc_dir
+      list(
+        root = root,
+        destination = destination,
+        document = document,
+        lazy = lazy,
+        quiet = quiet,
+        override = override
+      ),
+      build_log,
+      pandoc_dir
     ),
     error = function(condition) {
       stop(attach_build_log_message(condition, build_log))
@@ -54,13 +66,22 @@ build <- function(pkg = ".", destination = NULL, document = TRUE,
   invisible(result)
 }
 
-build_site_selected <- function(root, destination, document, lazy, quiet,
-                                override) {
+build_site_selected <- function(
+  root,
+  destination,
+  document,
+  lazy,
+  quiet,
+  override
+) {
   state <- new_preview_state(root, destination, document, "full", 1L, 1, quiet)
   state$build_root <- root
   started <- proc.time()[["elapsed"]]
   package <- cli::style_bold(basename(root))
-  user_message(sprintf("Building deployable pkgdown site for %s", package), "info")
+  user_message(
+    sprintf("Building deployable pkgdown site for %s", package),
+    "info"
+  )
 
   old_wd <- getwd()
   on.exit(try(setwd(old_wd), silent = TRUE), add = TRUE)
@@ -68,7 +89,8 @@ build_site_selected <- function(root, destination, document, lazy, quiet,
   if (isTRUE(document)) run_documentation(state)
   if (fs::file_exists(fs::path(root, "README.Rmd"))) run_readme(state)
   report_build_progress(
-    state, "Building deployable pkgdown site",
+    state,
+    "Building deployable pkgdown site",
     if (isTRUE(lazy)) "incremental site" else "full site"
   )
   relay_build_messages(

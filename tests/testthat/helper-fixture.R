@@ -1,16 +1,19 @@
 make_package <- function(path = tempfile("package ")) {
   dir.create(path, recursive = TRUE)
   dir.create(file.path(path, "R"))
-  writeLines(c(
-    "Package: fixture",
-    "Title: Fixture Package",
-    "Version: 0.0.0.9000",
-    "Authors@R: person('A', 'B', email='a@example.com', role=c('aut','cre'))",
-    "Description: A fixture package used for focused tests.",
-    "License: MIT",
-    "Encoding: UTF-8",
-    "URL: https://example.test"
-  ), file.path(path, "DESCRIPTION"))
+  writeLines(
+    c(
+      "Package: fixture",
+      "Title: Fixture Package",
+      "Version: 0.0.0.9000",
+      "Authors@R: person('A', 'B', email='a@example.com', role=c('aut','cre'))",
+      "Description: A fixture package used for focused tests.",
+      "License: MIT",
+      "Encoding: UTF-8",
+      "URL: https://example.test"
+    ),
+    file.path(path, "DESCRIPTION")
+  )
   writeLines("export(hello)", file.path(path, "NAMESPACE"))
   writeLines("hello <- function() 'hello'", file.path(path, "R", "hello.R"))
   normalizePath(path, winslash = "/")
@@ -34,13 +37,20 @@ service_for <- function(seconds) {
 }
 
 fetch_preview <- function(url, timeout = 10) {
-  job <- callr::r_bg(function(url) {
-    tryCatch({
-      connection <- base::url(url, open = "rb")
-      on.exit(close(connection), add = TRUE)
-      list(ok = TRUE, body = readBin(connection, "raw", n = 1e7))
-    }, error = function(e) list(ok = FALSE, error = conditionMessage(e)))
-  }, args = list(url = url), supervise = TRUE)
+  job <- callr::r_bg(
+    function(url) {
+      tryCatch(
+        {
+          connection <- base::url(url, open = "rb")
+          on.exit(close(connection), add = TRUE)
+          list(ok = TRUE, body = readBin(connection, "raw", n = 1e7))
+        },
+        error = function(e) list(ok = FALSE, error = conditionMessage(e))
+      )
+    },
+    args = list(url = url),
+    supervise = TRUE
+  )
   deadline <- Sys.time() + timeout
   while (job$is_alive() && Sys.time() < deadline) {
     httpuv::service(20)

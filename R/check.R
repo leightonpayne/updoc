@@ -37,9 +37,14 @@
 #'   check(format = "json", error = FALSE)
 #' }
 #' @export
-check <- function(pkg = ".", document = TRUE, quiet = FALSE,
-                  format = c("text", "json"), error = TRUE,
-                  pandoc = getOption("updoc.pandoc", NULL)) {
+check <- function(
+  pkg = ".",
+  document = TRUE,
+  quiet = FALSE,
+  format = c("text", "json"),
+  error = TRUE,
+  pandoc = getOption("updoc.pandoc", NULL)
+) {
   root <- package_root(pkg)
   check_flag(document, "document")
   check_flag(quiet, "quiet")
@@ -79,7 +84,10 @@ check <- function(pkg = ".", document = TRUE, quiet = FALSE,
     error = function(condition) {
       record <- build_error_record(condition, c(root, build_root))
       record <- enrich_build_error(
-        record, character(), "<initial>", c(root, build_root)
+        record,
+        character(),
+        "<initial>",
+        c(root, build_root)
       )
       list(
         ok = FALSE,
@@ -108,15 +116,23 @@ check <- function(pkg = ".", document = TRUE, quiet = FALSE,
       emit_check_warnings(result$warnings, failed = TRUE)
     }
     log_path <- terminal_path(build_log)
-    cli::cli_bullets(c(i = "{.strong Build log:} {log_path}"),
-                     .envir = environment())
+    cli::cli_bullets(
+      c(i = "{.strong Build log:} {log_path}"),
+      .envir = environment()
+    )
   }
 
   if (!isTRUE(result$ok) && isTRUE(error)) check_abort(result)
   invisible(result)
 }
 
-check_site_selected <- function(root, build_root, destination, document, quiet) {
+check_site_selected <- function(
+  root,
+  build_root,
+  destination,
+  document,
+  quiet
+) {
   state <- new_preview_state(root, destination, document, "full", 1L, 1, quiet)
   state$build_root <- build_root
   state$worker <- isTRUE(quiet)
@@ -133,37 +149,50 @@ check_site_selected <- function(root, build_root, destination, document, quiet) 
   }
 
   error <- tryCatch(
-    withCallingHandlers({
-      validate_changed_r_sources(fs::path(build_root, "<initial>"), build_root)
-      validate_changed_front_matter(fs::path(build_root, "<initial>"), build_root)
-      if (isTRUE(document)) run_documentation(state)
-      if (fs::file_exists(fs::path(build_root, "README.Rmd"))) run_readme(state)
-      override <- list(destination = destination)
-      pkg_meta <- pkgdown::as_pkgdown(build_root, override = override)
-      checked_preview_output_dir(state, pkg_meta)
-      report_build_progress(
-        state, "Checking pkgdown site", "full site", announce = !isTRUE(quiet)
-      )
-      relay_build_messages(
-        pkgdown::build_site(
-          pkg = build_root,
-          lazy = FALSE,
-          override = override,
-          preview = FALSE,
-          devel = FALSE,
-          new_process = TRUE,
-          install = TRUE,
+    withCallingHandlers(
+      {
+        validate_changed_r_sources(
+          fs::path(build_root, "<initial>"),
+          build_root
+        )
+        validate_changed_front_matter(
+          fs::path(build_root, "<initial>"),
+          build_root
+        )
+        if (isTRUE(document)) run_documentation(state)
+        if (fs::file_exists(fs::path(build_root, "README.Rmd")))
+          run_readme(state)
+        override <- list(destination = destination)
+        pkg_meta <- pkgdown::as_pkgdown(build_root, override = override)
+        checked_preview_output_dir(state, pkg_meta)
+        report_build_progress(
+          state,
+          "Checking pkgdown site",
+          "full site",
+          announce = !isTRUE(quiet)
+        )
+        relay_build_messages(
+          pkgdown::build_site(
+            pkg = build_root,
+            lazy = FALSE,
+            override = override,
+            preview = FALSE,
+            devel = FALSE,
+            new_process = TRUE,
+            install = TRUE,
+            quiet = quiet
+          ),
           quiet = quiet
-        ),
-        quiet = quiet
-      )
-      success <- TRUE
-      NULL
-    }, warning = function(condition) {
-      log_build_condition(condition)
-      build_warnings <<- c(build_warnings, conditionMessage(condition))
-      invokeRestart("muffleWarning")
-    }),
+        )
+        success <- TRUE
+        NULL
+      },
+      warning = function(condition) {
+        log_build_condition(condition)
+        build_warnings <<- c(build_warnings, conditionMessage(condition))
+        invokeRestart("muffleWarning")
+      }
+    ),
     error = function(e) {
       log_build_condition(e)
       filter_pandoc_condition(e, getOption("updoc.capture_pandoc"))
@@ -177,7 +206,10 @@ check_site_selected <- function(root, build_root, destination, document, quiet) 
   if (!isTRUE(success)) {
     record <- build_error_record(error, c(root, build_root))
     record <- enrich_build_error(
-      record, cleaned_warnings, "<initial>", c(root, build_root)
+      record,
+      cleaned_warnings,
+      "<initial>",
+      c(root, build_root)
     )
     error_payload <- build_error_payload(record, root)
   }
@@ -290,7 +322,8 @@ print.updoc_check <- function(x, ...) {
   if (!is.null(x$error)) {
     summary <- x$error$summary
     line <- paste(
-      cli::style_bold(cli::col_red("Error:")), cli::col_red(summary)
+      cli::style_bold(cli::col_red("Error:")),
+      cli::col_red(summary)
     )
     cli::cli_text("{line}")
     if (!is.null(x$error$location)) {
@@ -299,7 +332,8 @@ print.updoc_check <- function(x, ...) {
     }
     if (!is.null(x$error$cause)) {
       line <- paste(
-        cli::style_bold(cli::col_red("Cause:")), cli::col_red(x$error$cause)
+        cli::style_bold(cli::col_red("Cause:")),
+        cli::col_red(x$error$cause)
       )
       cli::cli_text("{line}")
     }

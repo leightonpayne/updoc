@@ -88,28 +88,50 @@ test_that("preview builds refuse destinations outside their work directory", {
   section <- build_plan("smart", "README.md")
 
   for (development in c("../external", "..", external)) {
-    writeLines(c(
-      "template:", "  bootstrap: 5", "development:", "  mode: devel",
-      paste0("  destination: ", development)
-    ), file.path(root, "_pkgdown.yml"))
-    expect_error(run_pkgdown(state, full), "temporary work directory",
-                 fixed = TRUE)
-    expect_error(run_pkgdown(state, section), "temporary work directory",
-                 fixed = TRUE)
+    writeLines(
+      c(
+        "template:",
+        "  bootstrap: 5",
+        "development:",
+        "  mode: devel",
+        paste0("  destination: ", development)
+      ),
+      file.path(root, "_pkgdown.yml")
+    )
+    expect_error(
+      run_pkgdown(state, full),
+      "temporary work directory",
+      fixed = TRUE
+    )
+    expect_error(
+      run_pkgdown(state, section),
+      "temporary work directory",
+      fixed = TRUE
+    )
     state$indexes_dirty <- TRUE
     state$pkgdown <- NULL
-    expect_error(refresh_shared_indexes(state), "temporary work directory",
-                 fixed = TRUE)
+    expect_error(
+      refresh_shared_indexes(state),
+      "temporary work directory",
+      fixed = TRUE
+    )
     expect_identical(unname(tools::md5sum(sentinel)), original)
     expect_identical(list.files(external), "keep.txt")
   }
 
   # Cached metadata must pass the same guard before shared outputs are written.
-  state$pkgdown <- pkgdown::as_pkgdown(root, override = list(
-    development = list(mode = "release"), destination = external
-  ))
-  expect_error(refresh_shared_indexes(state), "temporary work directory",
-               fixed = TRUE)
+  state$pkgdown <- pkgdown::as_pkgdown(
+    root,
+    override = list(
+      development = list(mode = "release"),
+      destination = external
+    )
+  )
+  expect_error(
+    refresh_shared_indexes(state),
+    "temporary work directory",
+    fixed = TRUE
+  )
   expect_identical(unname(tools::md5sum(sentinel)), original)
 })
 
@@ -117,10 +139,14 @@ test_that("preview output rejects symlink roots and ancestors", {
   root <- make_package()
   work <- tempfile("preview-output-links-")
   destination <- file.path(work, "output")
-  on.exit({
-    if (fs::is_link(destination)) try(fs::link_delete(destination), silent = TRUE)
-    unlink(c(root, work), recursive = TRUE)
-  }, add = TRUE)
+  on.exit(
+    {
+      if (fs::is_link(destination))
+        try(fs::link_delete(destination), silent = TRUE)
+      unlink(c(root, work), recursive = TRUE)
+    },
+    add = TRUE
+  )
   external <- file.path(work, "external")
   fs::dir_create(c(external, destination))
   sentinel <- file.path(external, "keep.txt")
@@ -133,12 +159,21 @@ test_that("preview output rejects symlink roots and ancestors", {
   full <- build_plan("smart", "<initial>")
 
   for (development in c("linked", "linked/not-created")) {
-    writeLines(c(
-      "template:", "  bootstrap: 5", "development:", "  mode: devel",
-      paste0("  destination: ", development)
-    ), file.path(root, "_pkgdown.yml"))
-    expect_error(run_pkgdown(state, full), "temporary work directory",
-                 fixed = TRUE)
+    writeLines(
+      c(
+        "template:",
+        "  bootstrap: 5",
+        "development:",
+        "  mode: devel",
+        paste0("  destination: ", development)
+      ),
+      file.path(root, "_pkgdown.yml")
+    )
+    expect_error(
+      run_pkgdown(state, full),
+      "temporary work directory",
+      fixed = TRUE
+    )
     expect_identical(unname(tools::md5sum(sentinel)), original)
     expect_identical(list.files(external), "keep.txt")
   }
@@ -147,10 +182,15 @@ test_that("preview output rejects symlink roots and ancestors", {
   unlink(link)
   fs::dir_delete(destination)
   expect_true(file.symlink(external, destination))
-  writeLines(c("development:", "  mode: release"),
-             file.path(root, "_pkgdown.yml"))
-  expect_error(run_pkgdown(state, full), "temporary work directory",
-               fixed = TRUE)
+  writeLines(
+    c("development:", "  mode: release"),
+    file.path(root, "_pkgdown.yml")
+  )
+  expect_error(
+    run_pkgdown(state, full),
+    "temporary work directory",
+    fixed = TRUE
+  )
   expect_identical(unname(tools::md5sum(sentinel)), original)
   expect_identical(list.files(external), "keep.txt")
 })
@@ -159,16 +199,33 @@ test_that("relative nested preview directories remain valid", {
   root <- make_package()
   work <- tempfile("preview-output-nested-")
   on.exit(unlink(c(root, work), recursive = TRUE), add = TRUE)
-  state <- new_preview_state(root, file.path(work, "output"), FALSE,
-                             "smart", 4321, .1, TRUE)
-  writeLines(c(
-    "development:", "  mode: devel", "  destination: preview/development"
-  ), file.path(root, "_pkgdown.yml"))
-  pkg <- pkgdown::as_pkgdown(root, override = list(
-    destination = state$destination
-  ))
+  state <- new_preview_state(
+    root,
+    file.path(work, "output"),
+    FALSE,
+    "smart",
+    4321,
+    .1,
+    TRUE
+  )
+  writeLines(
+    c(
+      "development:",
+      "  mode: devel",
+      "  destination: preview/development"
+    ),
+    file.path(root, "_pkgdown.yml")
+  )
+  pkg <- pkgdown::as_pkgdown(
+    root,
+    override = list(
+      destination = state$destination
+    )
+  )
   expected <- as.character(fs::path_norm(fs::path(
-    state$destination, "preview", "development"
+    state$destination,
+    "preview",
+    "development"
   )))
   expect_identical(checked_preview_output_dir(state, pkg), expected)
   fs::dir_create(expected)

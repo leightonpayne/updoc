@@ -2,15 +2,20 @@ generated_by_prebuild <- function(paths, root, documented, rendered_readme) {
   rel <- vapply(paths, relative_to_root, character(1), root = root)
   generated <- rep(FALSE, length(paths))
   if (documented) {
-    generated <- generated | rel %in% c("DESCRIPTION", "NAMESPACE") |
+    generated <- generated |
+      rel %in% c("DESCRIPTION", "NAMESPACE") |
       startsWith(rel, "man/")
   }
   if (rendered_readme) generated <- generated | rel == "README.md"
   paths[generated]
 }
 
-user_message <- function(text, type = "info", asynchronous = FALSE,
-                         leading_break = FALSE) {
+user_message <- function(
+  text,
+  type = "info",
+  asynchronous = FALSE,
+  leading_break = FALSE
+) {
   if (isTRUE(asynchronous) && isTRUE(leading_break) && interactive()) {
     cli::cli_text()
   }
@@ -61,8 +66,9 @@ terminal_paths <- function(paths) {
 }
 
 restore_console_prompt <- function(state, asynchronous) {
-  if (!isTRUE(asynchronous) || !isTRUE(state$restore_prompt) ||
-      !interactive()) {
+  if (
+    !isTRUE(asynchronous) || !isTRUE(state$restore_prompt) || !interactive()
+  ) {
     return(invisible(NULL))
   }
   prompt <- getOption("prompt", "> ")
@@ -82,36 +88,57 @@ describe_rebuild_trigger <- function(paths, styled = FALSE) {
   sprintf("%s changed", display)
 }
 
-execute_build <- function(state, changed, force_full = FALSE, initial = FALSE,
-                          asynchronous = FALSE) {
+execute_build <- function(
+  state,
+  changed,
+  force_full = FALSE,
+  initial = FALSE,
+  asynchronous = FALSE
+) {
   force_full <- isTRUE(force_full) || !is.null(state$last_error)
   before <- source_snapshot(state$root, state$source_site_dir)
   rel <- display_paths(changed, state$root)
   reconcile <- force_full || any(rel %in% c("<initial>", "<rebuild>"))
   sync_paths <- changed
-  if (reconcile && !is.null(state$build_root) &&
-      !identical(state$build_root, state$root)) {
+  if (
+    reconcile &&
+      !is.null(state$build_root) &&
+      !identical(state$build_root, state$root)
+  ) {
     sync_paths <- package_sync_paths(
-      state$root, state$build_root, before, state$source_site_dir
+      state$root,
+      state$build_root,
+      before,
+      state$source_site_dir
     )
   }
-  deleted <- any(!fs::file_exists(changed) & rel != "<initial>" &
-                   rel != "<rebuild>")
+  deleted <- any(
+    !fs::file_exists(changed) & rel != "<initial>" & rel != "<rebuild>"
+  )
   if (reconcile) deleted <- deleted || any(!fs::file_exists(sync_paths))
   documentation_only <- r_changes_are_documentation_only(
-    changed, state$root, state$build_root
+    changed,
+    state$root,
+    state$build_root
   )
-  plan <- build_plan(state$strategy, rel, force_full = force_full,
-                     deleted = deleted,
-                     documentation_only = documentation_only)
+  plan <- build_plan(
+    state$strategy,
+    rel,
+    force_full = force_full,
+    deleted = deleted,
+    documentation_only = documentation_only
+  )
   plan <- scope_article_index(plan, changed, state$root, state$build_root)
   targeted_articles <- identical(plan$kind, "sections") &&
-    identical(plan$targets, "articles") && length(plan$article_names) > 0L
+    identical(plan$targets, "articles") &&
+    length(plan$article_names) > 0L
   state$can_yield <- targeted_articles
   state$superseded <- FALSE
   state$publish_delta <- if (targeted_articles) {
-    list(write = stats::setNames(character(), character()),
-         remove = character())
+    list(
+      write = stats::setNames(character(), character()),
+      remove = character()
+    )
   } else NULL
   state$last_changed <- rel
   started <- proc.time()[["elapsed"]]
@@ -136,44 +163,52 @@ execute_build <- function(state, changed, force_full = FALSE, initial = FALSE,
   on.exit(try(setwd(old_wd), silent = TRUE), add = TRUE)
 
   error <- tryCatch(
-    withCallingHandlers({
-      report_build_progress(
-        state,
-        "Validating changed sources",
-        paste(rel, collapse = ", ")
-      )
-      validation_paths <- if (reconcile) {
-        fs::path(state$root, "<rebuild>")
-      } else changed
-      validate_changed_r_sources(validation_paths, state$root)
-      validate_changed_front_matter(validation_paths, state$root)
-      if (!is.null(state$build_root) && !identical(state$build_root, state$root)) {
-        report_build_progress(state, "Syncing changed sources",
-                              paste(rel, collapse = ", "))
-        sync_package_changes(state$root, state$build_root, sync_paths)
+    withCallingHandlers(
+      {
+        report_build_progress(
+          state,
+          "Validating changed sources",
+          paste(rel, collapse = ", ")
+        )
+        validation_paths <- if (reconcile) {
+          fs::path(state$root, "<rebuild>")
+        } else changed
+        validate_changed_r_sources(validation_paths, state$root)
+        validate_changed_front_matter(validation_paths, state$root)
+        if (
+          !is.null(state$build_root) && !identical(state$build_root, state$root)
+        ) {
+          report_build_progress(
+            state,
+            "Syncing changed sources",
+            paste(rel, collapse = ", ")
+          )
+          sync_package_changes(state$root, state$build_root, sync_paths)
+        }
+        if (plan$document && isTRUE(state$document)) {
+          documented <- TRUE
+          documentation <- run_documentation(state)
+          plan <- apply_documentation_changes(plan, documentation)
+        }
+        if (plan$readme) {
+          rendered_readme <- TRUE
+          run_readme(state)
+        }
+        completed <- if (state_should_yield_build(state)) {
+          FALSE
+        } else {
+          run_pkgdown(state, plan)
+        }
+        if (!isTRUE(completed)) state$superseded <- TRUE
+        success <- TRUE
+        NULL
+      },
+      warning = function(condition) {
+        log_build_condition(condition)
+        build_warnings <<- c(build_warnings, conditionMessage(condition))
+        invokeRestart("muffleWarning")
       }
-      if (plan$document && isTRUE(state$document)) {
-        documented <- TRUE
-        documentation <- run_documentation(state)
-        plan <- apply_documentation_changes(plan, documentation)
-      }
-      if (plan$readme) {
-        rendered_readme <- TRUE
-        run_readme(state)
-      }
-      completed <- if (state_should_yield_build(state)) {
-        FALSE
-      } else {
-        run_pkgdown(state, plan)
-      }
-      if (!isTRUE(completed)) state$superseded <- TRUE
-      success <- TRUE
-      NULL
-    }, warning = function(condition) {
-      log_build_condition(condition)
-      build_warnings <<- c(build_warnings, conditionMessage(condition))
-      invokeRestart("muffleWarning")
-    }),
+    ),
     error = function(e) {
       log_build_condition(e)
       filter_pandoc_condition(e, getOption("updoc.capture_pandoc"))
@@ -193,7 +228,8 @@ execute_build <- function(state, changed, force_full = FALSE, initial = FALSE,
 
   if (!success) {
     error <- build_error_record(
-      error, c(state$root, state$build_root)
+      error,
+      c(state$root, state$build_root)
     )
     error <- enrich_build_error(
       error,
@@ -206,7 +242,11 @@ execute_build <- function(state, changed, force_full = FALSE, initial = FALSE,
       emit_build_error(state$last_error, asynchronous)
       if (length(state$last_warnings)) {
         emit_build_warnings(
-          state$last_warnings, asynchronous, state$root, rel, failed = TRUE
+          state$last_warnings,
+          asynchronous,
+          state$root,
+          rel,
+          failed = TRUE
         )
       }
     }
@@ -221,8 +261,13 @@ execute_build <- function(state, changed, force_full = FALSE, initial = FALSE,
   invisible(success)
 }
 
-run_rebuild_sync <- function(state, changed, force_full = FALSE,
-                             initial = FALSE, asynchronous = FALSE) {
+run_rebuild_sync <- function(
+  state,
+  changed,
+  force_full = FALSE,
+  initial = FALSE,
+  asynchronous = FALSE
+) {
   changed <- unique(as.character(changed))
   if (isTRUE(state$building)) {
     state_queue_build(state, changed, force_full)
@@ -231,8 +276,13 @@ run_rebuild_sync <- function(state, changed, force_full = FALSE,
 
   state_begin_build(state)
   on.exit(state_end_build(state), add = TRUE)
-  success <- execute_build(state, changed, force_full = force_full,
-                           initial = initial, asynchronous = asynchronous)
+  success <- execute_build(
+    state,
+    changed,
+    force_full = force_full,
+    initial = initial,
+    asynchronous = asynchronous
+  )
 
   if (length(state$pending)) {
     pending <- state_take_build_queue(state)
@@ -244,22 +294,33 @@ run_rebuild_sync <- function(state, changed, force_full = FALSE,
     )
   }
   if (length(state$pending) && isTRUE(state$active)) {
-    later::later(function() {
-      if (!isTRUE(state$active) || isTRUE(state$building)) return(invisible(NULL))
-      pending <- state_take_build_queue(state)
-      run_rebuild_sync(state, pending$changed,
-                       force_full = pending$force_full, asynchronous = TRUE)
-    }, delay = 0)
+    later::later(
+      function() {
+        if (!isTRUE(state$active) || isTRUE(state$building))
+          return(invisible(NULL))
+        pending <- state_take_build_queue(state)
+        run_rebuild_sync(
+          state,
+          pending$changed,
+          force_full = pending$force_full,
+          asynchronous = TRUE
+        )
+      },
+      delay = 0
+    )
   }
   superseded <- isTRUE(success) &&
     (isTRUE(state$superseded) || state_should_yield_build(state))
   if (superseded) state$superseded <- TRUE
   if (isTRUE(success) && !superseded && !length(state$pending)) {
     started <- proc.time()[["elapsed"]]
-    index_error <- tryCatch({
-      refresh_shared_indexes(state)
-      NULL
-    }, error = function(e) e)
+    index_error <- tryCatch(
+      {
+        refresh_shared_indexes(state)
+        NULL
+      },
+      error = function(e) e
+    )
     state$last_duration <- state$last_duration +
       unname(proc.time()[["elapsed"]] - started)
     if (is.null(index_error)) {
@@ -268,7 +329,9 @@ run_rebuild_sync <- function(state, changed, force_full = FALSE,
       if (!initial && !isTRUE(state$worker)) {
         package <- cli::style_bold("pkgdown")
         user_message(
-          sprintf("%s is up to date", package), "success", asynchronous
+          sprintf("%s is up to date", package),
+          "success",
+          asynchronous
         )
       }
     } else {
@@ -279,7 +342,10 @@ run_rebuild_sync <- function(state, changed, force_full = FALSE,
       emit_build_error(state$last_error, asynchronous)
       if (length(state$last_warnings)) {
         emit_build_warnings(
-          state$last_warnings, asynchronous, state$root, state$last_changed,
+          state$last_warnings,
+          asynchronous,
+          state$root,
+          state$last_changed,
           failed = TRUE
         )
       }

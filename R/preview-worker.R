@@ -1,6 +1,8 @@
 build_worker_job <- function(spec) {
   run_updoc_build(
-    "build_worker_job_selected", list(spec = spec), spec$build_log,
+    "build_worker_job_selected",
+    list(spec = spec),
+    spec$build_log,
     spec$pandoc_dir
   )
 }
@@ -64,8 +66,13 @@ start_build_worker <- function(state) {
   invisible(state$compute)
 }
 
-build_worker_spec <- function(state, changed, force_full, initial,
-                              supersede_path) {
+build_worker_spec <- function(
+  state,
+  changed,
+  force_full,
+  initial,
+  supersede_path
+) {
   list(
     root = state$root,
     destination = state$destination,
@@ -90,8 +97,13 @@ build_worker_spec <- function(state, changed, force_full, initial,
   )
 }
 
-dispatch_build_job <- function(state, changed, force_full, initial,
-                               can_yield = FALSE) {
+dispatch_build_job <- function(
+  state,
+  changed,
+  force_full,
+  initial,
+  can_yield = FALSE
+) {
   namespace_path <- getNamespaceInfo(asNamespace("updoc"), "path")
   source_tree <- fs::file_exists(fs::path(namespace_path, "R", "build.R"))
   lib_paths <- .libPaths()
@@ -99,7 +111,11 @@ dispatch_build_job <- function(state, changed, force_full, initial,
   # Keep logs outside preview_dir so stopping the server does not erase them.
   state$build_log <- tempfile("updoc-preview-", fileext = ".log")
   spec <- build_worker_spec(
-    state, changed, force_full, initial, supersede_path
+    state,
+    changed,
+    force_full,
+    initial,
+    supersede_path
   )
 
   job <- mirai::mirai(
@@ -128,7 +144,12 @@ dispatch_build_job <- function(state, changed, force_full, initial,
     .compute = state$compute
   )
   state_set_build_job(
-    state, job, changed, initial, can_yield, supersede_path
+    state,
+    job,
+    changed,
+    initial,
+    can_yield,
+    supersede_path
   )
   state$job_poller <- later::later(
     function() check_build_job(state),
@@ -146,7 +167,9 @@ record_worker_failure <- function(state, value) {
   state_fail_build(
     state,
     build_error_record_text(
-      message, c(state$root, state$build_root), class(value)
+      message,
+      c(state$root, state$build_root),
+      class(value)
     )
   )
   state$last_duration <- NA_real_
@@ -181,22 +204,25 @@ publish_preview_delta <- function(state, delta) {
   existed <- stats::setNames(logical(length(paths)), paths)
   restore <- FALSE
   temporary <- NULL
-  on.exit({
-    if (!is.null(temporary)) unlink(temporary)
-    if (restore) {
-      for (path in paths) {
-        target <- fs::path(state$site_dir, path)
-        if (isTRUE(existed[[path]])) {
-          fs::dir_create(fs::path_dir(target))
-          fs::file_copy(fs::path(backup, path), target, overwrite = TRUE)
-        } else if (fs::file_exists(target) || fs::is_link(target)) {
-          fs::file_delete(target)
+  on.exit(
+    {
+      if (!is.null(temporary)) unlink(temporary)
+      if (restore) {
+        for (path in paths) {
+          target <- fs::path(state$site_dir, path)
+          if (isTRUE(existed[[path]])) {
+            fs::dir_create(fs::path_dir(target))
+            fs::file_copy(fs::path(backup, path), target, overwrite = TRUE)
+          } else if (fs::file_exists(target) || fs::is_link(target)) {
+            fs::file_delete(target)
+          }
         }
       }
-    }
-    # A failed restoration must leave its backup available.
-    if (fs::dir_exists(backup)) fs::dir_delete(backup)
-  }, add = TRUE)
+      # A failed restoration must leave its backup available.
+      if (fs::dir_exists(backup)) fs::dir_delete(backup)
+    },
+    add = TRUE
+  )
   for (path in paths) {
     target <- fs::path(state$site_dir, path)
     existed[[path]] <- fs::file_exists(target) || fs::is_link(target)
@@ -220,7 +246,10 @@ publish_preview_delta <- function(state, delta) {
     }
     hash <- unname(tools::md5sum(source))
     if (!identical(hash, unname(write[[path]]))) {
-      updoc_abort(sprintf("Generated preview output changed before publication: %s", path))
+      updoc_abort(sprintf(
+        "Generated preview output changed before publication: %s",
+        path
+      ))
     }
     target <- fs::path(state$site_dir, path)
     temporary <- tempfile("publish-", tmpdir = fs::path_dir(target))
@@ -229,7 +258,10 @@ publish_preview_delta <- function(state, delta) {
     if (fs::file_exists(target) || fs::is_link(target)) fs::file_delete(target)
     if (!file.rename(temporary, target)) {
       if (fs::file_exists(temporary)) fs::file_delete(temporary)
-      updoc_abort(sprintf("Could not publish generated preview output: %s", path))
+      updoc_abort(sprintf(
+        "Could not publish generated preview output: %s",
+        path
+      ))
     }
   }
   restore <- FALSE
@@ -238,12 +270,18 @@ publish_preview_delta <- function(state, delta) {
 }
 
 publish_preview <- function(state, delta = NULL) {
-  if (is.null(state$preview_dir) || is.null(state$build_dir) ||
-        !fs::dir_exists(state$build_dir)) {
+  if (
+    is.null(state$preview_dir) ||
+      is.null(state$build_dir) ||
+      !fs::dir_exists(state$build_dir)
+  ) {
     updoc_abort("The preview worker did not produce a site directory.")
   }
-  if (!is.null(delta) && !is.null(state$site_dir) &&
-      fs::dir_exists(state$site_dir)) {
+  if (
+    !is.null(delta) &&
+      !is.null(state$site_dir) &&
+      fs::dir_exists(state$site_dir)
+  ) {
     return(publish_preview_delta(state, delta))
   }
   generation <- state$publish_generation + 1L
@@ -252,8 +290,11 @@ publish_preview <- function(state, delta = NULL) {
   fs::dir_copy(state$build_dir, target)
 
   previous <- state_publish_site(state, target)
-  if (!is.null(previous) && !identical(previous, target) &&
-        fs::dir_exists(previous)) {
+  if (
+    !is.null(previous) &&
+      !identical(previous, target) &&
+      fs::dir_exists(previous)
+  ) {
     fs::dir_delete(previous)
   }
   invisible(target)
@@ -273,7 +314,8 @@ apply_worker_result <- function(state, result) {
   }
   state$indexes_dirty <- isTRUE(result$indexes_dirty)
   # A later delta omits earlier unpublished output, so publish the full tree.
-  state$publish_delta <- if (state$reload_pending > 0L) NULL else result$publish_delta
+  state$publish_delta <- if (state$reload_pending > 0L) NULL else
+    result$publish_delta
   if (isTRUE(state$trace_enabled) && length(result$trace)) {
     state$trace <- c(state$trace, result$trace)
   }
@@ -311,24 +353,32 @@ check_build_job <- function(state) {
     apply_worker_result(state, result)
   }
   if (isTRUE(success) && !length(state$pending)) {
-    publish_error <- tryCatch({
-      target <- if (is.null(state$publish_delta)) {
-        "new site generation"
-      } else {
-        "changed outputs"
-      }
-      report_build_progress(state, "Publishing preview", target)
-      publish_preview(state, state$publish_delta)
-      NULL
-    }, error = function(e) e)
+    publish_error <- tryCatch(
+      {
+        target <- if (is.null(state$publish_delta)) {
+          "new site generation"
+        } else {
+          "changed outputs"
+        }
+        report_build_progress(state, "Publishing preview", target)
+        publish_preview(state, state$publish_delta)
+        NULL
+      },
+      error = function(e) e
+    )
     if (is.null(publish_error)) {
       # Reload paths describe committed output from a single worker only.
-      reload_paths <- if (!isTRUE(initial) && state$reload_pending <= 1L &&
-                           !is.null(state$publish_delta)) {
+      reload_paths <- if (
+        !isTRUE(initial) &&
+          state$reload_pending <= 1L &&
+          !is.null(state$publish_delta)
+      ) {
         unique(c(names(state$publish_delta$write), state$publish_delta$remove))
       } else NULL
       state_complete_build(
-        state, result$last_success, reload = state$reload_pending > 0L,
+        state,
+        result$last_success,
+        reload = state$reload_pending > 0L,
         reload_paths = reload_paths
       )
       state$reload_pending <- 0L
@@ -350,10 +400,14 @@ check_build_job <- function(state) {
   finish_build_trace(state, outcome)
   state_end_build(state, clear_progress = TRUE, track_timing = TRUE)
 
-  if (isTRUE(success) && !length(state$pending) &&
-        length(state$last_warnings)) {
+  if (
+    isTRUE(success) && !length(state$pending) && length(state$last_warnings)
+  ) {
     emit_build_warnings(
-      state$last_warnings, TRUE, state$root, state$last_changed
+      state$last_warnings,
+      TRUE,
+      state$root,
+      state$last_changed
     )
   }
 
@@ -374,7 +428,10 @@ check_build_job <- function(state) {
     emit_build_error(state$last_error, TRUE)
     if (length(state$last_warnings)) {
       emit_build_warnings(
-        state$last_warnings, TRUE, state$root, state$last_changed,
+        state$last_warnings,
+        TRUE,
+        state$root,
+        state$last_changed,
         failed = TRUE
       )
     }
@@ -390,8 +447,13 @@ check_build_job <- function(state) {
   invisible(success)
 }
 
-request_rebuild <- function(state, changed, force_full = FALSE,
-                            initial = FALSE, asynchronous = FALSE) {
+request_rebuild <- function(
+  state,
+  changed,
+  force_full = FALSE,
+  initial = FALSE,
+  asynchronous = FALSE
+) {
   changed <- unique(as.character(changed))
   if (isTRUE(state$building)) {
     state_queue_active_build(state, changed, force_full)
@@ -399,10 +461,12 @@ request_rebuild <- function(state, changed, force_full = FALSE,
   }
 
   # Recovery must replace partial work before publishing again.
-  if (!isTRUE(initial) &&
+  if (
+    !isTRUE(initial) &&
       (state$rebuild_count == 0L ||
-       !is.null(state$last_error) ||
-       !isTRUE(fs::file_exists(fs::path(state$site_dir, "index.html"))))) {
+        !is.null(state$last_error) ||
+        !isTRUE(fs::file_exists(fs::path(state$site_dir, "index.html"))))
+  ) {
     force_full <- TRUE
   }
 
@@ -413,20 +477,30 @@ request_rebuild <- function(state, changed, force_full = FALSE,
     state$trace <- list()
   }
   state_begin_build(state, changed, track_timing = TRUE)
-  deleted <- any(!fs::file_exists(changed) &
-                   !state$last_changed %in% c("<initial>", "<rebuild>"))
+  deleted <- any(
+    !fs::file_exists(changed) &
+      !state$last_changed %in% c("<initial>", "<rebuild>")
+  )
   documentation_only <- r_changes_are_documentation_only(
-    changed, state$root, state$build_root
+    changed,
+    state$root,
+    state$build_root
   )
   plan <- build_plan(
-    state$strategy, state$last_changed, force_full = force_full,
-    deleted = deleted, documentation_only = documentation_only
+    state$strategy,
+    state$last_changed,
+    force_full = force_full,
+    deleted = deleted,
+    documentation_only = documentation_only
   )
   can_yield <- identical(plan$kind, "sections") &&
-    identical(plan$targets, "articles") && length(plan$article_names) > 0L
+    identical(plan$targets, "articles") &&
+    length(plan$article_names) > 0L
   clear_build_progress(state)
   report_build_progress(
-    state, "Preparing rebuild", describe_build_plan(plan, state$document),
+    state,
+    "Preparing rebuild",
+    describe_build_plan(plan, state$document),
     announce = FALSE
   )
   if (!initial) {
@@ -441,10 +515,13 @@ request_rebuild <- function(state, changed, force_full = FALSE,
       leading_break = TRUE
     )
   }
-  error <- tryCatch({
-    dispatch_build_job(state, changed, force_full, initial, can_yield)
-    NULL
-  }, error = function(e) e)
+  error <- tryCatch(
+    {
+      dispatch_build_job(state, changed, force_full, initial, can_yield)
+      NULL
+    },
+    error = function(e) e
+  )
   if (!is.null(error)) {
     state_fail_build(
       state,
@@ -461,19 +538,24 @@ schedule_rebuild <- function(state, changed) {
   state$debounced <- unique(c(state$debounced, changed))
   if (is.function(state$debouncer)) state$debouncer()
   delay <- min(0.1, state$interval)
-  state$debouncer <- later::later(function() {
-    state$debouncer <- NULL
-    if (!isTRUE(state$active)) return(invisible(NULL))
-    paths <- state$debounced
-    state$debounced <- character()
-    if (length(paths)) request_rebuild(state, paths, asynchronous = TRUE)
-    invisible(NULL)
-  }, delay = delay)
+  state$debouncer <- later::later(
+    function() {
+      state$debouncer <- NULL
+      if (!isTRUE(state$active)) return(invisible(NULL))
+      paths <- state$debounced
+      state$debounced <- character()
+      if (length(paths)) request_rebuild(state, paths, asynchronous = TRUE)
+      invisible(NULL)
+    },
+    delay = delay
+  )
   invisible(state)
 }
 
 flush_watched_changes <- function(state) {
-  if (!isTRUE(state$active) || is.null(state$snapshot) || is.null(state$compute)) {
+  if (
+    !isTRUE(state$active) || is.null(state$snapshot) || is.null(state$compute)
+  ) {
     return(invisible(FALSE))
   }
   current <- source_snapshot(state$root, state$source_site_dir)
@@ -496,8 +578,11 @@ flush_watched_changes <- function(state) {
 
 preview_is_settled <- function(state, after = NULL) {
   if (is.null(state) || !isTRUE(state$active)) return(TRUE)
-  if (isTRUE(state$building) || length(state$pending) > 0L ||
-      length(state$debounced) > 0L) {
+  if (
+    isTRUE(state$building) ||
+      length(state$pending) > 0L ||
+      length(state$debounced) > 0L
+  ) {
     return(FALSE)
   }
   if (!is.null(after)) {
@@ -518,14 +603,18 @@ poll_sources <- function(state) {
       schedule_rebuild(state, changed)
     }
   }
-  state$watcher <- later::later(function() poll_sources(state),
-                                delay = state$interval)
+  state$watcher <- later::later(
+    function() poll_sources(state),
+    delay = state$interval
+  )
   invisible(NULL)
 }
 
 start_watcher <- function(state) {
   state$snapshot <- source_snapshot(state$root, state$source_site_dir)
-  state$watcher <- later::later(function() poll_sources(state),
-                                delay = state$interval)
+  state$watcher <- later::later(
+    function() poll_sources(state),
+    delay = state$interval
+  )
   invisible(state$watcher)
 }

@@ -50,8 +50,16 @@ state_phase <- function(state) {
   "ready"
 }
 
-new_preview_state <- function(root, destination, document, strategy, port,
-                              interval, quiet, theme = "auto") {
+new_preview_state <- function(
+  root,
+  destination,
+  document,
+  strategy,
+  port,
+  interval,
+  quiet,
+  theme = "auto"
+) {
   state <- new.env(parent = emptyenv())
   state$root <- root
   state$destination <- destination
@@ -116,8 +124,11 @@ new_preview_state <- function(root, destination, document, strategy, port,
   state
 }
 
-state_queue_build <- function(state, changed = character(),
-                              force_full = FALSE) {
+state_queue_build <- function(
+  state,
+  changed = character(),
+  force_full = FALSE
+) {
   pending <- unique(c(state$pending, as.character(changed)))
   if (isTRUE(force_full)) pending <- c(pending, "<force-full>")
   state$pending <- unique(pending)
@@ -158,8 +169,11 @@ state_finish_build_timing <- function(state) {
   invisible(state$last_duration)
 }
 
-state_end_build <- function(state, clear_progress = FALSE,
-                            track_timing = FALSE) {
+state_end_build <- function(
+  state,
+  clear_progress = FALSE,
+  track_timing = FALSE
+) {
   state$building <- FALSE
   if (isTRUE(clear_progress)) clear_build_progress(state)
   if (isTRUE(track_timing) && !length(state$pending)) {
@@ -169,8 +183,12 @@ state_end_build <- function(state, clear_progress = FALSE,
   invisible(state)
 }
 
-state_complete_build <- function(state, last_success = Sys.time(),
-                                 reload = FALSE, reload_paths = NULL) {
+state_complete_build <- function(
+  state,
+  last_success = Sys.time(),
+  reload = FALSE,
+  reload_paths = NULL
+) {
   state$last_success <- last_success
   state$last_error <- NULL
   state$rebuild_count <- state$rebuild_count + 1L
@@ -199,9 +217,14 @@ state_publish_site <- function(state, site_dir) {
   invisible(previous)
 }
 
-state_set_build_job <- function(state, job, changed, initial,
-                                can_yield = FALSE,
-                                supersede_path = NULL) {
+state_set_build_job <- function(
+  state,
+  job,
+  changed,
+  initial,
+  can_yield = FALSE,
+  supersede_path = NULL
+) {
   if (!is.null(state$job)) {
     updoc_abort("Internal error: a build worker job is already registered.")
   }
@@ -214,8 +237,11 @@ state_set_build_job <- function(state, job, changed, initial,
   invisible(job)
 }
 
-state_queue_active_build <- function(state, changed = character(),
-                                     force_full = FALSE) {
+state_queue_active_build <- function(
+  state,
+  changed = character(),
+  force_full = FALSE
+) {
   if (isTRUE(state$job_can_yield)) {
     changed <- unique(c(state$job_changed, changed))
   }
@@ -227,7 +253,8 @@ state_queue_active_build <- function(state, changed = character(),
 }
 
 state_should_yield_build <- function(state) {
-  isTRUE(state$can_yield) && !is.null(state$supersede_path) &&
+  isTRUE(state$can_yield) &&
+    !is.null(state$supersede_path) &&
     file.exists(state$supersede_path)
 }
 
@@ -252,8 +279,11 @@ state_clear_build_job <- function(state) {
 
 preview_state_problems <- function(state) {
   problems <- character()
-  if (!is.logical(state$building) || length(state$building) != 1L ||
-        is.na(state$building)) {
+  if (
+    !is.logical(state$building) ||
+      length(state$building) != 1L ||
+      is.na(state$building)
+  ) {
     problems <- c(problems, "`building` must be one TRUE or FALSE value")
   }
   if (!is.character(state$pending) || anyDuplicated(state$pending)) {
@@ -261,7 +291,8 @@ preview_state_problems <- function(state) {
   }
   if (is.null(state$job)) {
     # The worker subprocess legitimately holds supersede_path without a mirai job.
-    has_job_meta <- length(state$job_changed) || isTRUE(state$job_initial) ||
+    has_job_meta <- length(state$job_changed) ||
+      isTRUE(state$job_initial) ||
       isTRUE(state$job_can_yield) ||
       (!isTRUE(state$worker) && !is.null(state$supersede_path))
     if (has_job_meta) {
@@ -276,8 +307,11 @@ preview_state_problems <- function(state) {
     reload_pending = state$reload_pending,
     publish_generation = state$publish_generation
   )
-  if (any(!is.finite(counters)) || any(counters < 0) ||
-        any(counters != as.integer(counters))) {
+  if (
+    any(!is.finite(counters)) ||
+      any(counters < 0) ||
+      any(counters != as.integer(counters))
+  ) {
     problems <- c(problems, "lifecycle counters must be non-negative integers")
   }
   unique(problems)

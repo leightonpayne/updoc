@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Canonical pre-PR verification for humans and agents.
 # Usage:
-#   ./tools/check-pr.sh          # fast checks (assets, browser tests, roxygen drift, unit tests)
+#   ./tools/check-pr.sh          # fast checks (Air format, assets, browser, roxygen drift, unit tests)
 #   ./tools/check-pr.sh --full   # fast checks + integration tests + R CMD check --as-cran
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -23,6 +23,13 @@ for arg in "$@"; do
       ;;
   esac
 done
+
+echo "==> R formatting (Air)"
+if ! command -v air >/dev/null 2>&1; then
+  echo "air is not installed or not on PATH." >&2
+  exit 1
+fi
+air format --check .
 
 echo "==> Browser regression tests"
 node --test tests/browser/*.test.cjs

@@ -9,7 +9,9 @@ relay_build_messages <- function(code, quiet) {
         log_build_condition(condition)
         invokeRestart("muffleMessage")
       }),
-      file = log, append = TRUE, type = "output"
+      file = log,
+      append = TRUE,
+      type = "output"
     ))
     return(value)
   }
@@ -51,10 +53,14 @@ run_documentation <- function(state) {
   changed <- signature_changes(before, after)
   invisible(list(
     changed_rd = basename(grep(
-      "^man/.*[.]Rd$", changed$changed, value = TRUE
+      "^man/.*[.]Rd$",
+      changed$changed,
+      value = TRUE
     )),
     removed_rd = basename(grep(
-      "^man/.*[.]Rd$", changed$removed, value = TRUE
+      "^man/.*[.]Rd$",
+      changed$removed,
+      value = TRUE
     )),
     namespace_changed = "NAMESPACE" %in% changed$changed
   ))
@@ -127,12 +133,15 @@ section_output_files <- function(plan, pkg, site_dir) {
   files <- character()
   scan_directory <- function(directory) {
     if (!fs::dir_exists(directory)) return(character())
-    display_paths(fs::dir_ls(
-      directory,
-      recurse = TRUE,
-      type = "file",
-      fail = FALSE
-    ), site_dir)
+    display_paths(
+      fs::dir_ls(
+        directory,
+        recurse = TRUE,
+        type = "file",
+        fail = FALSE
+      ),
+      site_dir
+    )
   }
 
   if ("home" %in% plan$targets) files <- c(files, "index.html")
@@ -142,19 +151,29 @@ section_output_files <- function(plan, pkg, site_dir) {
       topic_outputs <- pkg$topics$file_out[
         pkg$topics$file_in %in% plan$reference_files
       ]
-      if (!isTRUE(plan$reference_unscoped) &&
-          length(plan$reference_files) && length(topic_outputs)) {
+      if (
+        !isTRUE(plan$reference_unscoped) &&
+          length(plan$reference_files) &&
+          length(topic_outputs)
+      ) {
         files <- c(files, fs::path("reference", topic_outputs))
         figures <- fs::path(site_dir, "reference", "figures")
         if (fs::dir_exists(figures)) {
           stems <- tools::file_path_sans_ext(topic_outputs)
           figure_files <- fs::dir_ls(
-            figures, recurse = TRUE, type = "file", fail = FALSE
+            figures,
+            recurse = TRUE,
+            type = "file",
+            fail = FALSE
           )
           figure_names <- fs::path_file(figure_files)
-          keep <- vapply(stems, function(stem) {
-            startsWith(figure_names, paste0(stem, "-"))
-          }, logical(length(figure_names)))
+          keep <- vapply(
+            stems,
+            function(stem) {
+              startsWith(figure_names, paste0(stem, "-"))
+            },
+            logical(length(figure_names))
+          )
           if (length(stems)) {
             figure_files <- figure_files[rowSums(keep) > 0L]
             files <- c(files, display_paths(figure_files, site_dir))
@@ -202,8 +221,11 @@ searchable_output_signature <- function(signature) {
 }
 
 apply_documentation_changes <- function(plan, documentation) {
-  if (!is.list(documentation) || !identical(plan$kind, "sections") ||
-      !"reference" %in% plan$targets) {
+  if (
+    !is.list(documentation) ||
+      !identical(plan$kind, "sections") ||
+      !"reference" %in% plan$targets
+  ) {
     return(plan)
   }
   changed <- if (is.null(documentation$changed_rd)) {
@@ -233,7 +255,8 @@ track_pkgdown_reads <- function(state, operation, total, code) {
     code,
     message = function(condition) {
       lines <- strsplit(
-        cli::ansi_strip(conditionMessage(condition)), "[\r\n]+"
+        cli::ansi_strip(conditionMessage(condition)),
+        "[\r\n]+"
       )[[1L]]
       lines <- trimws(lines)
       reads <- grep("^Reading[[:space:]]+", lines, value = TRUE)
@@ -266,7 +289,8 @@ check_preview_site <- function(pkg) {
 
 checked_preview_output_dir <- function(state, pkg) {
   base <- as.character(fs::path_norm(fs::path_abs(
-    state$destination, start = state$build_root
+    state$destination,
+    start = state$build_root
   )))
   output <- as.character(fs::path_norm(fs::path_abs(pkg$dst_path)))
   within <- function(path, root) {
@@ -282,8 +306,11 @@ checked_preview_output_dir <- function(state, pkg) {
   if (isTRUE(pkg$development$in_dev)) {
     development <- gsub("\\\\", "/", pkg$development$destination)
     parts <- strsplit(development, "/", fixed = TRUE)[[1L]]
-    if (fs::is_absolute_path(development) ||
-        grepl("^[A-Za-z]:", development) || any(parts == "..")) {
+    if (
+      fs::is_absolute_path(development) ||
+        grepl("^[A-Za-z]:", development) ||
+        any(parts == "..")
+    ) {
       unsafe()
     }
   }
@@ -300,19 +327,24 @@ checked_preview_output_dir <- function(state, pkg) {
 
   resolve_existing <- function(path) {
     ancestor <- path
-    while (!fs::file_exists(ancestor) && !fs::dir_exists(ancestor) &&
-           !fs::is_link(ancestor)) {
+    while (
+      !fs::file_exists(ancestor) &&
+        !fs::dir_exists(ancestor) &&
+        !fs::is_link(ancestor)
+    ) {
       ancestor <- as.character(fs::path_dir(ancestor))
     }
     actual <- tryCatch(fs::path_real(ancestor), error = function(e) unsafe())
     as.character(fs::path_norm(fs::path(
-      actual, fs::path_rel(path, start = ancestor)
+      actual,
+      fs::path_rel(path, start = ancestor)
     )))
   }
   # Resolve the parent separately so a redirected work root cannot redefine
   # the allowed directory. This also catches filesystem junctions on Windows.
   expected <- as.character(fs::path(
-    resolve_existing(as.character(fs::path_dir(base))), fs::path_file(base)
+    resolve_existing(as.character(fs::path_dir(base))),
+    fs::path_file(base)
   ))
   if (!within(resolve_existing(output), expected)) unsafe()
   output
@@ -332,8 +364,11 @@ run_pkgdown_site <- function(state, plan, override) {
     !length(fs::dir_ls(pkg$dst_path, all = TRUE, fail = FALSE))
 
   if (!isTRUE(plan$lazy) || destination_empty) {
-    report_build_progress(state, "Initializing site",
-                          "assets, template, and metadata")
+    report_build_progress(
+      state,
+      "Initializing site",
+      "assets, template, and metadata"
+    )
     pkgdown::init_site(pkg, override = override)
   }
 
@@ -342,7 +377,8 @@ run_pkgdown_site <- function(state, plan, override) {
 
   topic_count <- nrow(pkg$topics)
   report_build_progress(
-    state, "Building reference",
+    state,
+    "Building reference",
     sprintf("%d topic%s", topic_count, if (topic_count == 1L) "" else "s")
   )
   track_pkgdown_reads(
@@ -361,9 +397,13 @@ run_pkgdown_site <- function(state, plan, override) {
   if (article_count) {
     if (isTRUE(plan$lazy)) {
       report_build_progress(
-        state, "Building articles",
-        sprintf("%d article%s", article_count,
-                if (article_count == 1L) "" else "s")
+        state,
+        "Building articles",
+        sprintf(
+          "%d article%s",
+          article_count,
+          if (article_count == 1L) "" else "s"
+        )
       )
       track_pkgdown_reads(
         state,
@@ -380,16 +420,23 @@ run_pkgdown_site <- function(state, plan, override) {
       report_build_progress(state, "Building articles index")
       pkgdown::build_articles_index(pkg)
       build_targeted_articles(
-        state, pkg, pkg$vignettes$name, override
+        state,
+        pkg,
+        pkg$vignettes$name,
+        override
       )
     }
   }
 
   tutorial_count <- nrow(pkg$tutorials)
   report_build_progress(
-    state, "Building tutorials",
-    sprintf("%d tutorial%s", tutorial_count,
-            if (tutorial_count == 1L) "" else "s")
+    state,
+    "Building tutorials",
+    sprintf(
+      "%d tutorial%s",
+      tutorial_count,
+      if (tutorial_count == 1L) "" else "s"
+    )
   )
   pkgdown::build_tutorials(pkg, override = override, preview = FALSE)
 
@@ -429,8 +476,11 @@ run_pkgdown <- function(state, plan) {
       state$pkgdown <- pkg
       state$site_dir <- site_dir
       if ("assets" %in% plan$targets) {
-        report_build_progress(state, "Refreshing site assets",
-                              "CSS, JavaScript, logo, and favicons")
+        report_build_progress(
+          state,
+          "Refreshing site assets",
+          "CSS, JavaScript, logo, and favicons"
+        )
         pkgdown::init_site(pkg)
         state$reload_dirty <- TRUE
       }
@@ -438,8 +488,11 @@ run_pkgdown <- function(state, plan) {
       if (!length(section_targets)) {
         invisible(NULL)
       } else if (!isTRUE(pkg$bs_version > 3)) {
-        report_build_progress(state, "Building pkgdown site",
-                              "Bootstrap 3 incremental site")
+        report_build_progress(
+          state,
+          "Building pkgdown site",
+          "Bootstrap 3 incremental site"
+        )
         pkgdown::build_site(
           pkg = pkg,
           lazy = TRUE,
@@ -450,9 +503,11 @@ run_pkgdown <- function(state, plan) {
         state$indexes_dirty <- FALSE
         state$reload_dirty <- TRUE
       } else {
-        baseline <- if (!is.null(state$publish_delta) &&
-                        !is.null(state$published_site_dir) &&
-                        fs::dir_exists(state$published_site_dir)) {
+        baseline <- if (
+          !is.null(state$publish_delta) &&
+            !is.null(state$published_site_dir) &&
+            fs::dir_exists(state$published_site_dir)
+        ) {
           state$published_site_dir
         } else state$site_dir
         before <- section_output_signature(plan, pkg, baseline)
@@ -468,10 +523,14 @@ run_pkgdown <- function(state, plan) {
             topic_names <- pkg$topics$name[
               pkg$topics$file_in %in% plan$reference_files
             ]
-            if (!isTRUE(plan$reference_unscoped) &&
-                length(plan$reference_files) && length(topic_names)) {
+            if (
+              !isTRUE(plan$reference_unscoped) &&
+                length(plan$reference_files) &&
+                length(topic_names)
+            ) {
               report_build_progress(
-                state, "Building reference",
+                state,
+                "Building reference",
                 paste(plan$reference_files, collapse = ", ")
               )
               pkgdown::build_reference(
@@ -482,8 +541,10 @@ run_pkgdown <- function(state, plan) {
               )
             } else {
               report_build_progress(
-                state, "Building reference",
-                if (isTRUE(plan$reference_lazy)) "changed topics" else "all topics"
+                state,
+                "Building reference",
+                if (isTRUE(plan$reference_lazy)) "changed topics" else
+                  "all topics"
               )
               pkgdown::build_reference(
                 pkg,
@@ -501,13 +562,18 @@ run_pkgdown <- function(state, plan) {
               pkgdown::build_articles_index(pkg)
             }
             completed <- build_targeted_articles(
-              state, pkg, plan$article_names, override
+              state,
+              pkg,
+              plan$article_names,
+              override
             )
             if (!isTRUE(completed)) return(invisible(FALSE))
           } else {
             report_build_progress(
-              state, "Building articles",
-              if (isTRUE(plan$articles_lazy)) "changed articles" else "all articles"
+              state,
+              "Building articles",
+              if (isTRUE(plan$articles_lazy)) "changed articles" else
+                "all articles"
             )
             pkgdown::build_articles(
               pkg,
@@ -546,15 +612,23 @@ run_pkgdown <- function(state, plan) {
   invisible(TRUE)
 }
 
-shared_output_signature <- function(pkg, site_dir, markdown_paths = character()) {
+shared_output_signature <- function(
+  pkg,
+  site_dir,
+  markdown_paths = character()
+) {
   # pkgdown also creates legacy nested URLs for vignettes/articles content.
   # New articles need these redirects published alongside the search index.
   articles <- pkg$vignettes$file_out[
     startsWith(pkg$vignettes$name, "articles/")
   ]
   markdown <- fs::path_ext_set(as.character(markdown_paths), "md")
-  files <- c("search.json", "llms.txt", fs::path("articles", articles),
-             markdown)
+  files <- c(
+    "search.json",
+    "llms.txt",
+    fs::path("articles", articles),
+    markdown
+  )
   files_signature(fs::path(site_dir, files), site_dir)
 }
 
@@ -592,8 +666,11 @@ refresh_markdown_outputs <- function(pkg, site_dir, paths) {
 
 refresh_shared_indexes <- function(state) {
   if (!isTRUE(state$indexes_dirty)) return(invisible(TRUE))
-  report_build_progress(state, "Refreshing preview metadata",
-                        "search, redirects, and Markdown")
+  report_build_progress(
+    state,
+    "Refreshing preview metadata",
+    "search, redirects, and Markdown"
+  )
   override <- destination_override(state$build_root, state$destination)
   pkg <- state$pkgdown
   if (is.null(pkg)) {
@@ -603,17 +680,22 @@ refresh_shared_indexes <- function(state) {
   # The configured destination can resolve to a development subdirectory.
   # Publication paths must be relative to the directory pkgdown actually uses.
   site_dir <- checked_preview_output_dir(state, pkg)
-  baseline <- if (!is.null(state$publish_delta) &&
-                  !is.null(state$published_site_dir) &&
-                  fs::dir_exists(state$published_site_dir)) {
+  baseline <- if (
+    !is.null(state$publish_delta) &&
+      !is.null(state$published_site_dir) &&
+      fs::dir_exists(state$published_site_dir)
+  ) {
     state$published_site_dir
   } else site_dir
   before <- shared_output_signature(pkg, baseline, state$markdown_paths)
-  relay_build_messages({
-    pkgdown::build_search(pkg)
-    pkgdown::build_redirects(pkg)
-    refresh_markdown_outputs(pkg, site_dir, state$markdown_paths)
-  }, quiet = isTRUE(state$quiet) || isTRUE(state$worker))
+  relay_build_messages(
+    {
+      pkgdown::build_search(pkg)
+      pkgdown::build_redirects(pkg)
+      refresh_markdown_outputs(pkg, site_dir, state$markdown_paths)
+    },
+    quiet = isTRUE(state$quiet) || isTRUE(state$worker)
+  )
   after <- shared_output_signature(pkg, site_dir, state$markdown_paths)
   record_publish_changes(state, before, after)
   state$indexes_dirty <- FALSE

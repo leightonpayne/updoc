@@ -17,13 +17,22 @@ test_that("queued article publication includes earlier unpublished full output",
     # A full/home build finishes while an article edit waits in the queue.
     state_queue_build(state, file.path(root, "vignettes", "article.Rmd"))
     full <- list(
-      success = TRUE, snapshot = NULL, last_changed = "README.md",
-      last_success = Sys.time(), last_duration = 1, last_warnings = character(),
-      indexes_dirty = FALSE, reload_count = 1L, publish_delta = NULL
+      success = TRUE,
+      snapshot = NULL,
+      last_changed = "README.md",
+      last_success = Sys.time(),
+      last_duration = 1,
+      last_warnings = character(),
+      indexes_dirty = FALSE,
+      reload_count = 1L,
+      publish_delta = NULL
     )
     expect_true(apply_worker_result(state, full))
     expect_identical(state$reload_pending, 1L)
-    expect_identical(readLines(file.path(state$site_dir, "index.html")), "Old home")
+    expect_identical(
+      readLines(file.path(state$site_dir, "index.html")),
+      "Old home"
+    )
     state_take_build_queue(state)
 
     # The next worker only describes its own change, which may be a no-op.
@@ -35,15 +44,21 @@ test_that("queued article publication includes earlier unpublished full output",
       article <- file.path(state$build_dir, "article.html")
       writeLines("New article", article)
       result$publish_delta$write <- stats::setNames(
-        unname(tools::md5sum(article)), "article.html"
+        unname(tools::md5sum(article)),
+        "article.html"
       )
     }
     state$job <- list(data = result)
     state_begin_build(state)
     expect_true(suppressMessages(check_build_job(state)))
-    expect_identical(readLines(file.path(state$site_dir, "index.html")), "New home")
-    expect_identical(readLines(file.path(state$site_dir, "article.html")),
-                     if (article_changes) "New article" else "Old article")
+    expect_identical(
+      readLines(file.path(state$site_dir, "index.html")),
+      "New home"
+    )
+    expect_identical(
+      readLines(file.path(state$site_dir, "article.html")),
+      if (article_changes) "New article" else "Old article"
+    )
     expect_identical(state$reload_pending, 0L)
     expect_true(jsonlite::fromJSON(preview_status_json(state))$reload$full)
     unlink(root, recursive = TRUE)
@@ -66,30 +81,43 @@ test_that("failed publication restores replaced, deleted, and newly added files"
     outputs <- file.path(state$build_dir, c("new.html", "one.html", "two.html"))
     for (path in outputs) writeLines(paste("Replacement", basename(path)), path)
     delta <- list(
-      write = stats::setNames(unname(tools::md5sum(outputs)), basename(outputs)),
+      write = stats::setNames(
+        unname(tools::md5sum(outputs)),
+        basename(outputs)
+      ),
       remove = "removed.html"
     )
     if (failure == "missing") unlink(outputs[[3L]])
     if (failure == "changed") writeLines("Changed after hashing", outputs[[3L]])
     if (failure == "copy") {
       copy_file <- fs::file_copy
-      local_mocked_bindings(file_copy = function(path, new_path, ...) {
-        if (identical(as.character(fs::path_norm(path)),
-                      as.character(fs::path_norm(outputs[[3L]])))) {
-          writeLines("Partial copy", new_path)
-          stop("Injected copy failure")
-        }
-        copy_file(path, new_path, ...)
-      }, .package = "fs")
+      local_mocked_bindings(
+        file_copy = function(path, new_path, ...) {
+          if (
+            identical(
+              as.character(fs::path_norm(path)),
+              as.character(fs::path_norm(outputs[[3L]]))
+            )
+          ) {
+            writeLines("Partial copy", new_path)
+            stop("Injected copy failure")
+          }
+          copy_file(path, new_path, ...)
+        },
+        .package = "fs"
+      )
     }
-    message <- switch(failure,
+    message <- switch(
+      failure,
       missing = "Generated preview output is missing",
       changed = "Generated preview output changed before publication",
       copy = "Injected copy failure"
     )
     expect_error(publish_preview_delta(state, delta), message, fixed = TRUE)
-    expect_identical(tools::md5sum(list.files(state$site_dir, full.names = TRUE)),
-                     before)
+    expect_identical(
+      tools::md5sum(list.files(state$site_dir, full.names = TRUE)),
+      before
+    )
     expect_identical(list.files(state$preview_dir), "site")
     expect_identical(state$publish_generation, 0L)
     unlink(root, recursive = TRUE)
@@ -110,7 +138,15 @@ test_that("unrelated saves cannot discard a failed source batch", {
     writeLines(c("---", "title: Original article", "---"), article)
     writeLines(c("---", "title: Removed article", "---"), removed)
     mirror_package(root, mirror)
-    state <- new_preview_state(root, tempfile(), document, "smart", 4321, 1, TRUE)
+    state <- new_preview_state(
+      root,
+      tempfile(),
+      document,
+      "smart",
+      4321,
+      1,
+      TRUE
+    )
     state$build_root <- mirror
     state$worker <- TRUE
     documented <- 0L
@@ -135,15 +171,23 @@ test_that("unrelated saves cannot discard a failed source batch", {
     expect_false(run_rebuild_sync(state, readme, force_full = TRUE))
     expect_match(state$last_error$message, "Invalid R syntax", fixed = TRUE)
     expect_identical(state$rebuild_count, 0L)
-    expect_identical(readLines(file.path(mirror, "README.md")), "# Original home")
+    expect_identical(
+      readLines(file.path(mirror, "README.md")),
+      "# Original home"
+    )
 
     writeLines("hello <- function() 'repaired'", r_file)
     expect_true(run_rebuild_sync(state, readme, force_full = TRUE))
     expect_null(state$last_error)
     expect_identical(state$rebuild_count, 1L)
-    expect_identical(readLines(file.path(mirror, "R", "hello.R")), readLines(r_file))
-    expect_identical(readLines(file.path(mirror, "vignettes", "article.Rmd")),
-                     readLines(article))
+    expect_identical(
+      readLines(file.path(mirror, "R", "hello.R")),
+      readLines(r_file)
+    )
+    expect_identical(
+      readLines(file.path(mirror, "vignettes", "article.Rmd")),
+      readLines(article)
+    )
     expect_false(file.exists(file.path(mirror, "vignettes", "removed.Rmd")))
     expect_identical(documented, if (document) 1L else 0L)
     unlink(c(root, mirror), recursive = TRUE)
@@ -182,11 +226,15 @@ test_that("manual rebuilds reconcile unobserved edits and deletions", {
   writeLines(c("---", "title: New article", "---"), article)
   expect_true(run_rebuild_sync(state, file.path(root, "<rebuild>")))
   expect_false(plan$lazy)
-  expect_identical(readLines(file.path(mirror, "R", "hello.R")),
-                   "hello <- function() 'new value'")
+  expect_identical(
+    readLines(file.path(mirror, "R", "hello.R")),
+    "hello <- function() 'new value'"
+  )
   expect_false(file.exists(file.path(mirror, "R", "old.R")))
-  expect_identical(readLines(file.path(mirror, "vignettes", "new.Rmd")),
-                   readLines(article))
+  expect_identical(
+    readLines(file.path(mirror, "vignettes", "new.Rmd")),
+    readLines(article)
+  )
   expect_false(dir.exists(file.path(mirror, "inst", "site")))
 })
 
@@ -197,38 +245,67 @@ test_that("shared indexes publish from the resolved site directory", {
     root <- make_package()
     work <- tempfile("shared-indexes-")
     cleanup <- c(cleanup, root, work)
-    config <- c("url: https://example.test", "llm-docs: false",
-                "template:", "  bootstrap: 5")
-    config <- c(config, "development:", if (development == "release") {
-      "  mode: release"
-    } else {
-      c("  mode: devel", paste0("  destination: ", development))
-    })
+    config <- c(
+      "url: https://example.test",
+      "llm-docs: false",
+      "template:",
+      "  bootstrap: 5"
+    )
+    config <- c(
+      config,
+      "development:",
+      if (development == "release") {
+        "  mode: release"
+      } else {
+        c("  mode: devel", paste0("  destination: ", development))
+      }
+    )
     writeLines(config, file.path(root, "_pkgdown.yml"))
     dir.create(file.path(root, "vignettes", "articles"), recursive = TRUE)
-    writeLines(c("---", "title: Guide", "output: html_document", "---"),
-               file.path(root, "vignettes", "articles", "guide.Rmd"))
+    writeLines(
+      c("---", "title: Guide", "output: html_document", "---"),
+      file.path(root, "vignettes", "articles", "guide.Rmd")
+    )
 
-    state <- new_preview_state(root, file.path(work, "output"), FALSE,
-                               "smart", 4321, .1, TRUE)
-    pkg <- pkgdown::as_pkgdown(root, override = list(
-      destination = state$destination
-    ))
+    state <- new_preview_state(
+      root,
+      file.path(work, "output"),
+      FALSE,
+      "smart",
+      4321,
+      .1,
+      TRUE
+    )
+    pkg <- pkgdown::as_pkgdown(
+      root,
+      override = list(
+        destination = state$destination
+      )
+    )
     state$site_dir <- as.character(pkg$dst_path)
     state$published_site_dir <- file.path(work, "published")
-    fs::dir_create(c(file.path(state$site_dir, "articles"),
-                     state$published_site_dir))
+    fs::dir_create(c(
+      file.path(state$site_dir, "articles"),
+      state$published_site_dir
+    ))
     writeLines("{}", file.path(state$site_dir, "pkgdown.yml"))
-    writeLines(c(
-      '<html><head><meta property="og:title" content="Guide"></head>',
-      '<body><main><div class="section" id="updated">',
-      '<h1>Updated guide</h1><p>Fresh searchable content.</p>',
-      '</div></main></body></html>'
-    ), file.path(state$site_dir, "articles", "guide.html"))
-    writeLines('<html><body><main><h1>Home</h1></main></body></html>',
-               file.path(state$site_dir, "index.html"))
-    writeLines('[{"old":true}]',
-               file.path(state$published_site_dir, "search.json"))
+    writeLines(
+      c(
+        '<html><head><meta property="og:title" content="Guide"></head>',
+        '<body><main><div class="section" id="updated">',
+        '<h1>Updated guide</h1><p>Fresh searchable content.</p>',
+        '</div></main></body></html>'
+      ),
+      file.path(state$site_dir, "articles", "guide.html")
+    )
+    writeLines(
+      '<html><body><main><h1>Home</h1></main></body></html>',
+      file.path(state$site_dir, "index.html")
+    )
+    writeLines(
+      '[{"old":true}]',
+      file.path(state$published_site_dir, "search.json")
+    )
     state$publish_delta <- list(write = character(), remove = character())
     state$indexes_dirty <- TRUE
 
@@ -239,8 +316,11 @@ test_that("shared indexes publish from the resolved site directory", {
     expect_length(state$publish_delta$remove, 0L)
     expect_false(state$indexes_dirty)
     search <- file.path(state$site_dir, "search.json")
-    expect_match(paste(readLines(search, warn = FALSE), collapse = "\n"),
-                 "Fresh searchable content", fixed = TRUE)
+    expect_match(
+      paste(readLines(search, warn = FALSE), collapse = "\n"),
+      "Fresh searchable content",
+      fixed = TRUE
+    )
 
     state$build_dir <- state$site_dir
     state$site_dir <- state$published_site_dir
@@ -248,8 +328,11 @@ test_that("shared indexes publish from the resolved site directory", {
     publish_preview_delta(state, state$publish_delta)
     expect_true(file.exists(file.path(state$site_dir, "search.json")))
     expect_true(file.exists(file.path(state$site_dir, expected[[2L]])))
-    expect_identical(unname(tools::md5sum(search)), unname(tools::md5sum(
-      file.path(state$site_dir, "search.json")
-    )))
+    expect_identical(
+      unname(tools::md5sum(search)),
+      unname(tools::md5sum(
+        file.path(state$site_dir, "search.json")
+      ))
+    )
   }
 })

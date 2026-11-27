@@ -28,16 +28,23 @@ test_that("exported functions validate package paths and documented inputs", {
   expect_error(preview(root, quiet = NA, browse = FALSE), "TRUE.*FALSE")
   expect_error(preview(root, theme = "sepia", browse = FALSE), "arg")
   expect_error(serve(root, port = -1, browse = FALSE), "0 through 65535")
-  expect_error(preview(root, pandoc = NA_character_, browse = FALSE),
-               "one non-empty directory path")
-  expect_error(serve(root, pandoc = "", browse = FALSE),
-               "one non-empty directory path")
+  expect_error(
+    preview(root, pandoc = NA_character_, browse = FALSE),
+    "one non-empty directory path"
+  )
+  expect_error(
+    serve(root, pandoc = "", browse = FALSE),
+    "one non-empty directory path"
+  )
 
   expect_error(build(root, document = NA), "TRUE.*FALSE")
   expect_error(build(root, lazy = NA), "TRUE.*FALSE")
   expect_error(build(root, quiet = NA), "TRUE.*FALSE")
   expect_error(build(root, destination = ""), "non-empty")
-  expect_error(build(root, pandoc = NA_character_), "one non-empty directory path")
+  expect_error(
+    build(root, pandoc = NA_character_),
+    "one non-empty directory path"
+  )
 
   expect_error(check(root, document = NA), "TRUE.*FALSE")
   expect_error(check(root, quiet = NA), "TRUE.*FALSE")
@@ -96,8 +103,11 @@ test_that("preview state transitions enforce lifecycle invariants", {
 
   # Worker states may hold supersede_path without a parent job; parent states may not.
   state$supersede_path <- tempfile("supersede-")
-  expect_true(any(grepl("job metadata exists without a worker job",
-                        preview_state_problems(state), fixed = TRUE)))
+  expect_true(any(grepl(
+    "job metadata exists without a worker job",
+    preview_state_problems(state),
+    fixed = TRUE
+  )))
   state$worker <- TRUE
   expect_length(preview_state_problems(state), 0L)
   state$worker <- FALSE
@@ -108,5 +118,9 @@ test_that("preview state transitions enforce lifecycle invariants", {
   state$job_initial <- TRUE
   problems <- preview_state_problems(state)
   expect_true(any(grepl("non-negative integers", problems, fixed = TRUE)))
-  expect_true(any(grepl("job metadata exists without a worker job", problems, fixed = TRUE)))
+  expect_true(any(grepl(
+    "job metadata exists without a worker job",
+    problems,
+    fixed = TRUE
+  )))
 })
