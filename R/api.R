@@ -18,11 +18,16 @@
 #'   serve()
 #' }
 #' @export
-serve <- function(pkg = ".", document = TRUE,
-                  strategy = c("smart", "lazy", "full"), port = 4321,
-                  browse = interactive(), quiet = FALSE,
-                  theme = getOption("updoc.theme", "auto"),
-                  pandoc = getOption("updoc.pandoc", NULL)) {
+serve <- function(
+  pkg = ".",
+  document = TRUE,
+  strategy = c("smart", "lazy", "full"),
+  port = 4321,
+  browse = interactive(),
+  quiet = FALSE,
+  theme = getOption("updoc.theme", "auto"),
+  pandoc = getOption("updoc.pandoc", NULL)
+) {
   handle <- preview(
     pkg = pkg,
     document = document,
@@ -40,12 +45,15 @@ serve <- function(pkg = ".", document = TRUE,
   key <- terminal_key("Ctrl+C")
   user_message(sprintf("Watching for changes; press %s to stop.", key), "info")
   on.exit(if (preview_running(root)) stop_preview(root), add = TRUE)
-  tryCatch({
-    while (state_alive(state)) {
-      httpuv::service(timeoutMs = 100)
-      later::run_now(timeoutSecs = 0)
-    }
-  }, interrupt = function(e) invisible(NULL))
+  tryCatch(
+    {
+      while (state_alive(state)) {
+        httpuv::service(timeoutMs = 100)
+        later::run_now(timeoutSecs = 0)
+      }
+    },
+    interrupt = function(e) invisible(NULL)
+  )
   if (preview_running(root)) stop_preview(root)
   invisible(handle)
 }
@@ -115,11 +123,16 @@ serve <- function(pkg = ".", document = TRUE,
 #'   site$stop()
 #' }
 #' @export
-preview <- function(pkg = ".", document = TRUE,
-                    strategy = c("smart", "lazy", "full"), port = 4321,
-                    browse = interactive(), quiet = FALSE,
-                    theme = getOption("updoc.theme", "auto"),
-                    pandoc = getOption("updoc.pandoc", NULL)) {
+preview <- function(
+  pkg = ".",
+  document = TRUE,
+  strategy = c("smart", "lazy", "full"),
+  port = 4321,
+  browse = interactive(),
+  quiet = FALSE,
+  theme = getOption("updoc.theme", "auto"),
+  pandoc = getOption("updoc.pandoc", NULL)
+) {
   root <- package_root(pkg)
   strategy <- match.arg(strategy)
   theme <- match.arg(theme, c("auto", "inverse", "light", "dark"))
@@ -141,8 +154,16 @@ preview <- function(pkg = ".", document = TRUE,
   preview_dir <- tempfile(sprintf("updoc-%s-", basename(root)))
   fs::dir_create(preview_dir)
   destination <- fs::path(preview_dir, "work")
-  state <- new_preview_state(root, destination, document, strategy, port,
-                             interval, quiet, theme)
+  state <- new_preview_state(
+    root,
+    destination,
+    document,
+    strategy,
+    port,
+    interval,
+    quiet,
+    theme
+  )
   state$pandoc_dir <- pandoc_dir
   state$preview_dir <- preview_dir
   state$progress_path <- fs::path(preview_dir, "progress.rds")
@@ -150,32 +171,37 @@ preview <- function(pkg = ".", document = TRUE,
   state$restore_prompt <- interactive()
   state$site_dir <- fs::path(preview_dir, "site-0")
 
-  tryCatch({
-    state$source_site_dir <- resolve_site_dir(root)
-    state$warm_started <- prepare_initial_preview(
-      root, state$source_site_dir, state$site_dir
-    )
-    mirror_package(root, state$build_root, state$source_site_dir)
-    state$build_dir <- resolve_site_dir(state$build_root, destination)
-    state$snapshot <- source_snapshot(root, state$source_site_dir)
-    start_preview_server(state)
-    registry_set(state)
-    start_build_worker(state)
-    start_watcher(state)
-    package <- cli::style_bold(basename(root))
-    if (isTRUE(state$warm_started)) {
-      user_message(
-        "Serving existing pkgdown output while the initial build runs",
-        "info"
+  tryCatch(
+    {
+      state$source_site_dir <- resolve_site_dir(root)
+      state$warm_started <- prepare_initial_preview(
+        root,
+        state$source_site_dir,
+        state$site_dir
       )
+      mirror_package(root, state$build_root, state$source_site_dir)
+      state$build_dir <- resolve_site_dir(state$build_root, destination)
+      state$snapshot <- source_snapshot(root, state$source_site_dir)
+      start_preview_server(state)
+      registry_set(state)
+      start_build_worker(state)
+      start_watcher(state)
+      package <- cli::style_bold(basename(root))
+      if (isTRUE(state$warm_started)) {
+        user_message(
+          "Serving existing pkgdown output while the initial build runs",
+          "info"
+        )
+      }
+      user_message(sprintf("Building pkgdown site for %s", package), "info")
+      request_rebuild(state, fs::path(root, "<initial>"), initial = TRUE)
+    },
+    error = function(e) {
+      stop_state(state)
+      registry_remove(root)
+      stop(e)
     }
-    user_message(sprintf("Building pkgdown site for %s", package), "info")
-    request_rebuild(state, fs::path(root, "<initial>"), initial = TRUE)
-  }, error = function(e) {
-    stop_state(state)
-    registry_remove(root)
-    stop(e)
-  })
+  )
   url <- terminal_url(state$url)
   user_message(sprintf("Preview is available at %s", url), "success")
   if (isTRUE(browse)) utils::browseURL(state$url)
@@ -221,8 +247,9 @@ print.updoc_preview <- function(x, ...) {
 }
 
 stop_preview <- function(pkg = ".") {
-  root <- if (is.character(pkg) && length(pkg) == 1L &&
-              !is.null(registry_get(pkg))) {
+  root <- if (
+    is.character(pkg) && length(pkg) == 1L && !is.null(registry_get(pkg))
+  ) {
     pkg
   } else {
     package_root(pkg)
@@ -248,28 +275,47 @@ preview_status <- function(pkg = ".") {
   state <- registry_get(root)
   if (is.null(state)) {
     out <- list(
-      active = FALSE, phase = "down", package_root = root, site_dir = NA_character_,
-      url = NA_character_, host = NA_character_, port = NA_integer_,
-      building = FALSE, pending = FALSE, last_changed = character(),
+      active = FALSE,
+      phase = "down",
+      package_root = root,
+      site_dir = NA_character_,
+      url = NA_character_,
+      host = NA_character_,
+      port = NA_integer_,
+      building = FALSE,
+      pending = FALSE,
+      last_changed = character(),
       progress = NULL,
-      last_success = as.POSIXct(NA), last_duration = NA_real_,
-      last_error = NULL, warnings = list(), rebuild_count = 0L,
+      last_success = as.POSIXct(NA),
+      last_duration = NA_real_,
+      last_error = NULL,
+      warnings = list(),
+      rebuild_count = 0L,
       build_log = NULL,
-      strategy = NA_character_, theme = NA_character_
+      strategy = NA_character_,
+      theme = NA_character_
     )
   } else {
     out <- list(
-      active = state_alive(state), phase = state_phase(state),
+      active = state_alive(state),
+      phase = state_phase(state),
       package_root = state$root,
-      site_dir = state$site_dir, url = state$url, host = state$host,
-      port = state$port, building = state$building,
+      site_dir = state$site_dir,
+      url = state$url,
+      host = state$host,
+      port = state$port,
+      building = state$building,
       pending = length(state$pending) > 0L || length(state$debounced) > 0L,
       progress = if (isTRUE(state$building)) state$progress else NULL,
-      last_changed = state$last_changed, last_success = state$last_success,
-      last_duration = state$last_duration, last_error = state$last_error,
+      last_changed = state$last_changed,
+      last_success = state$last_success,
+      last_duration = state$last_duration,
+      last_error = state$last_error,
       build_log = state$build_log,
       warnings = build_warning_payload(
-        state$last_warnings, state$root, state$last_changed
+        state$last_warnings,
+        state$root,
+        state$last_changed
       ),
       rebuild_count = state$rebuild_count,
       strategy = state$strategy,
@@ -309,7 +355,8 @@ print.updoc_status <- function(x, ...) {
     error <- normalize_build_error(x$last_error, x$package_root)
     summary <- error$summary
     line <- paste(
-      cli::style_bold(cli::col_red("Last error:")), cli::col_red(summary)
+      cli::style_bold(cli::col_red("Last error:")),
+      cli::col_red(summary)
     )
     cli::cli_text("{line}")
     if (!is.null(error$location)) {
@@ -318,7 +365,8 @@ print.updoc_status <- function(x, ...) {
     }
     if (!is.null(error$cause)) {
       line <- paste(
-        cli::style_bold(cli::col_red("Cause:")), cli::col_red(error$cause)
+        cli::style_bold(cli::col_red("Cause:")),
+        cli::col_red(error$cause)
       )
       cli::cli_text("{line}")
     }
@@ -366,8 +414,11 @@ preview_wait <- function(pkg = ".", timeout = 60, after = NULL) {
   if (is.null(state)) return(preview_status(root))
   flush_watched_changes(state)
   deadline <- Sys.time() + timeout
-  while (state_alive(state) && !preview_is_settled(state, after) &&
-         Sys.time() < deadline) {
+  while (
+    state_alive(state) &&
+      !preview_is_settled(state, after) &&
+      Sys.time() < deadline
+  ) {
     later::run_now(0.05)
     httpuv::service(50)
   }
@@ -380,7 +431,8 @@ preview_rebuild <- function(pkg = ".", full = FALSE) {
   state <- registry_get(root)
   if (is.null(state)) {
     updoc_abort(sprintf(
-      "No preview is running for %s; call updoc::preview() first.", root
+      "No preview is running for %s; call updoc::preview() first.",
+      root
     ))
   }
   request_rebuild(state, fs::path(root, "<rebuild>"), force_full = isTRUE(full))

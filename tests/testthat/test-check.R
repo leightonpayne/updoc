@@ -1,5 +1,8 @@
 test_that("check() reports syntax errors non-destructively in text and json formats", {
-  skip_if_not(rmarkdown::pandoc_available("2.10.1"), "Pandoc >= 2.10.1 required")
+  skip_if_not(
+    rmarkdown::pandoc_available("2.10.1"),
+    "Pandoc >= 2.10.1 required"
+  )
   root <- make_package()
   on.exit(unlink(root, recursive = TRUE), add = TRUE)
   writeLines("broken <- function( {", file.path(root, "R", "hello.R"))
@@ -15,7 +18,10 @@ test_that("check() reports syntax errors non-destructively in text and json form
   expect_false(dir.exists(file.path(root, "docs")))
   expect_false(dir.exists(file.path(root, "man")))
 
-  parsed <- jsonlite::fromJSON(paste(out, collapse = "\n"), simplifyVector = FALSE)
+  parsed <- jsonlite::fromJSON(
+    paste(out, collapse = "\n"),
+    simplifyVector = FALSE
+  )
   expect_false(parsed$ok)
   expect_identical(parsed$build_log, result$build_log)
   expect_match(parsed$error$summary, "Invalid R syntax", fixed = TRUE)
@@ -36,13 +42,22 @@ test_that("check() reports syntax errors non-destructively in text and json form
 })
 
 test_that("check() refuses _pkgdown.yml destinations outside its temporary directory", {
-  skip_if_not(rmarkdown::pandoc_available("2.10.1"), "Pandoc >= 2.10.1 required")
+  skip_if_not(
+    rmarkdown::pandoc_available("2.10.1"),
+    "Pandoc >= 2.10.1 required"
+  )
   root <- make_package()
   on.exit(unlink(root, recursive = TRUE), add = TRUE)
-  writeLines(c(
-    "template:", "  bootstrap: 5",
-    "development:", "  mode: devel", "  destination: ../escaped"
-  ), file.path(root, "_pkgdown.yml"))
+  writeLines(
+    c(
+      "template:",
+      "  bootstrap: 5",
+      "development:",
+      "  mode: devel",
+      "  destination: ../escaped"
+    ),
+    file.path(root, "_pkgdown.yml")
+  )
 
   result <- NULL
   utils::capture.output({
@@ -56,7 +71,10 @@ test_that("check() refuses _pkgdown.yml destinations outside its temporary direc
 test_that("bundled SKILL.md is installed with the package", {
   skill <- system.file("skills", "updoc", "SKILL.md", package = "updoc")
   expect_true(nzchar(skill) && file.exists(skill))
-  content <- paste(readLines(skill, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+  content <- paste(
+    readLines(skill, warn = FALSE, encoding = "UTF-8"),
+    collapse = "\n"
+  )
   expect_match(content, "updoc::check", fixed = TRUE)
   expect_match(content, "/__updoc__/status", fixed = TRUE)
 })

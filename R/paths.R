@@ -18,10 +18,15 @@ package_root <- function(pkg = ".") {
     }
     candidate <- parent
   }
-  fields <- tryCatch(read.dcf(fs::path(candidate, "DESCRIPTION")),
-                     error = function(e) NULL)
-  if (is.null(fields) || !"Package" %in% colnames(fields) ||
-      !nzchar(fields[1L, "Package"])) {
+  fields <- tryCatch(
+    read.dcf(fs::path(candidate, "DESCRIPTION")),
+    error = function(e) NULL
+  )
+  if (
+    is.null(fields) ||
+      !"Package" %in% colnames(fields) ||
+      !nzchar(fields[1L, "Package"])
+  ) {
     updoc_abort(sprintf("Invalid package DESCRIPTION: %s", candidate))
   }
   as.character(fs::path_real(candidate))
@@ -29,8 +34,12 @@ package_root <- function(pkg = ".") {
 
 destination_override <- function(root, destination) {
   if (is.null(destination)) return(list())
-  if (!is.character(destination) || length(destination) != 1L ||
-      is.na(destination) || !nzchar(destination)) {
+  if (
+    !is.character(destination) ||
+      length(destination) != 1L ||
+      is.na(destination) ||
+      !nzchar(destination)
+  ) {
     updoc_abort("`destination` must be NULL or one non-empty path.")
   }
   destination <- fs::path_abs(fs::path_expand(destination), start = root)
@@ -42,8 +51,11 @@ resolve_site_dir <- function(root, destination = NULL) {
   configured <- tryCatch(
     pkgdown::as_pkgdown(root, override = override),
     error = function(e) {
-      updoc_abort(sprintf("Could not read pkgdown configuration for %s: %s",
-                           root, conditionMessage(e)))
+      updoc_abort(sprintf(
+        "Could not read pkgdown configuration for %s: %s",
+        root,
+        conditionMessage(e)
+      ))
     }
   )
   site <- configured$dst_path
@@ -83,39 +95,80 @@ is_excluded_path <- function(path, root, site_dir = NULL) {
   rel <- gsub("\\\\", "/", relative_to_root(absolute, root))
   if (!is.null(site_dir)) {
     site_abs <- as.character(fs::path_norm(fs::path_abs(site_dir)))
-    if (identical(absolute, site_abs) ||
-        startsWith(absolute, paste0(site_abs, "/"))) return(TRUE)
+    if (
+      identical(absolute, site_abs) ||
+        startsWith(absolute, paste0(site_abs, "/"))
+    )
+      return(TRUE)
   }
   parts <- strsplit(rel, "/", fixed = TRUE)[[1L]]
-  excluded_dir <- parts %in% c(".git", ".Rproj.user", "packrat", ".cache",
-                                ".quarto", ".knitr", "node_modules")
+  excluded_dir <- parts %in%
+    c(
+      ".git",
+      ".Rproj.user",
+      "packrat",
+      ".cache",
+      ".quarto",
+      ".knitr",
+      "node_modules"
+    )
   if (any(excluded_dir)) return(TRUE)
-  if (length(parts) >= 2L && identical(parts[1L], "renv") &&
-      identical(parts[2L], "library")) return(TRUE)
+  if (
+    length(parts) >= 2L &&
+      identical(parts[1L], "renv") &&
+      identical(parts[2L], "library")
+  )
+    return(TRUE)
   if (any(grepl("\\.Rcheck$", parts))) return(TRUE)
   name <- basename(rel)
-  grepl("(^#.*#$)|(~$)|(\\.sw[a-p]$)|(\\.tmp$)|(\\.temp$)|(\\.bak$)|(^\\.#[^/]+$)",
-        name, ignore.case = TRUE)
+  grepl(
+    "(^#.*#$)|(~$)|(\\.sw[a-p]$)|(\\.tmp$)|(\\.temp$)|(\\.bak$)|(^\\.#[^/]+$)",
+    name,
+    ignore.case = TRUE
+  )
 }
 
 is_relevant_path <- function(path, root, site_dir = NULL) {
   if (is_excluded_path(path, root, site_dir)) return(FALSE)
   rel <- gsub("\\\\", "/", relative_to_root(path, root))
-  exact <- c("DESCRIPTION", "NAMESPACE", "_pkgdown.yml", "_pkgdown.yaml",
-             "README.Rmd", "README.md", "index.md", "NEWS.md")
+  exact <- c(
+    "DESCRIPTION",
+    "NAMESPACE",
+    "_pkgdown.yml",
+    "_pkgdown.yaml",
+    "README.Rmd",
+    "README.md",
+    "index.md",
+    "NEWS.md"
+  )
   dirs <- c("R", "man", "vignettes", "pkgdown", "inst", "data", "src")
   rel %in% exact || any(startsWith(rel, paste0(dirs, "/")))
 }
 
 watch_candidates <- function(root) {
-  exact <- fs::path(root, c("DESCRIPTION", "NAMESPACE", "_pkgdown.yml",
-                            "_pkgdown.yaml", "README.Rmd", "README.md",
-                            "index.md", "NEWS.md"))
-  dirs <- fs::path(root, c("R", "man", "vignettes", "pkgdown", "inst", "data", "src"))
+  exact <- fs::path(
+    root,
+    c(
+      "DESCRIPTION",
+      "NAMESPACE",
+      "_pkgdown.yml",
+      "_pkgdown.yaml",
+      "README.Rmd",
+      "README.md",
+      "index.md",
+      "NEWS.md"
+    )
+  )
+  dirs <- fs::path(
+    root,
+    c("R", "man", "vignettes", "pkgdown", "inst", "data", "src")
+  )
   files <- exact[fs::file_exists(exact)]
   for (dir in dirs[fs::dir_exists(dirs)]) {
-    files <- c(files, fs::dir_ls(dir, recurse = TRUE, type = "file",
-                                 all = TRUE, fail = FALSE))
+    files <- c(
+      files,
+      fs::dir_ls(dir, recurse = TRUE, type = "file", all = TRUE, fail = FALSE)
+    )
   }
   unique(as.character(files))
 }
@@ -135,14 +188,16 @@ source_snapshot <- function(root, site_dir = NULL) {
     grepl("(^|/)renv/library(/|$)", rel) |
     grepl("(^|/)[^/]+[.]Rcheck(/|$)", rel)
   names <- basename(rel)
-  excluded <- excluded | grepl(
-    "(^#.*#$)|(~$)|([.]sw[a-p]$)|([.]tmp$)|([.]temp$)|([.]bak$)|(^[.]#[^/]+$)",
-    names,
-    ignore.case = TRUE
-  )
+  excluded <- excluded |
+    grepl(
+      "(^#.*#$)|(~$)|([.]sw[a-p]$)|([.]tmp$)|([.]temp$)|([.]bak$)|(^[.]#[^/]+$)",
+      names,
+      ignore.case = TRUE
+    )
   if (!is.null(site_dir)) {
     site <- gsub(
-      "\\\\", "/",
+      "\\\\",
+      "/",
       relative_to_root(fs::path_abs(site_dir), fs::path_abs(root))
     )
     if (nzchar(site) && !fs::is_absolute_path(site)) {
@@ -158,9 +213,13 @@ source_snapshot <- function(root, site_dir = NULL) {
 
 snapshot_changes <- function(old, new) {
   all <- union(names(old), names(new))
-  changed <- vapply(all, function(path) {
-    !identical(unname(old[path]), unname(new[path]))
-  }, logical(1))
+  changed <- vapply(
+    all,
+    function(path) {
+      !identical(unname(old[path]), unname(new[path]))
+    },
+    logical(1)
+  )
   all[changed]
 }
 
@@ -201,8 +260,11 @@ sync_package_changes <- function(root, mirror, changed) {
   for (source in changed) {
     relative <- relative_to_root(source, root_abs)
     source_abs <- as.character(fs::path_norm(fs::path_abs(source)))
-    if (!nzchar(relative) || startsWith(relative, "<") ||
-        !startsWith(source_abs, prefix)) {
+    if (
+      !nzchar(relative) ||
+        startsWith(relative, "<") ||
+        !startsWith(source_abs, prefix)
+    ) {
       next
     }
     target <- fs::path(mirror, relative)
@@ -212,7 +274,8 @@ sync_package_changes <- function(root, mirror, changed) {
       fs::file_copy(source, target, overwrite = TRUE)
     } else if (fs::dir_exists(source)) {
       if (fs::dir_exists(target)) fs::dir_delete(target)
-      if (fs::file_exists(target) || fs::is_link(target)) fs::file_delete(target)
+      if (fs::file_exists(target) || fs::is_link(target))
+        fs::file_delete(target)
       fs::dir_copy(source, target)
     } else if (fs::dir_exists(target)) {
       fs::dir_delete(target)

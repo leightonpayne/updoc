@@ -27,10 +27,13 @@ diagnostic_from_text <- function(text, root = NULL, parent = NULL) {
   if (length(cause_index)) {
     index <- cause_index[[1L]]
     inline <- trimws(sub(
-      paste0(cause_pattern, "[[:space:]]*"), "", lines[[index]], perl = TRUE
+      paste0(cause_pattern, "[[:space:]]*"),
+      "",
+      lines[[index]],
+      perl = TRUE
     ))
-    following <- if (index < length(lines)) lines[(index + 1L):length(lines)] else
-      character()
+    following <- if (index < length(lines))
+      lines[(index + 1L):length(lines)] else character()
     cause <- paste(c(inline[nzchar(inline)], following), collapse = " ")
     lines <- lines[seq_len(index - 1L)]
   }
@@ -49,8 +52,10 @@ diagnostic_from_text <- function(text, root = NULL, parent = NULL) {
   if (is.null(cause) && inherits(parent, "condition")) {
     parent_text <- clean_diagnostic_text(conditionMessage(parent), root)
     if (nzchar(parent_text) && !identical(parent_text, text)) {
-      cause <- paste(strsplit(parent_text, "\n", fixed = TRUE)[[1L]],
-                     collapse = " ")
+      cause <- paste(
+        strsplit(parent_text, "\n", fixed = TRUE)[[1L]],
+        collapse = " "
+      )
     }
   }
 
@@ -127,7 +132,9 @@ diagnostic_source_excerpt <- function(location, roots = character()) {
 literal_connection_path <- function(excerpt) {
   if (is.null(excerpt)) return(NULL)
   code <- gsub(
-    "(^|\\n)[0-9]+[[:space:]]*\\|[[:space:]]*", "\\1", excerpt,
+    "(^|\\n)[0-9]+[[:space:]]*\\|[[:space:]]*",
+    "\\1",
+    excerpt,
     perl = TRUE
   )
   pattern <- paste0(
@@ -141,8 +148,12 @@ literal_connection_path <- function(excerpt) {
   pieces[[2L]]
 }
 
-enrich_build_error <- function(error, warnings = character(), changed = character(),
-                               roots = character()) {
+enrich_build_error <- function(
+  error,
+  warnings = character(),
+  changed = character(),
+  roots = character()
+) {
   error <- normalize_build_error(error)
   warnings <- clean_build_warnings(c(warnings, error$context))
   error$context <- NULL
@@ -159,8 +170,11 @@ enrich_build_error <- function(error, warnings = character(), changed = characte
     if (length(vignette) == 1L) source <- vignette[[1L]]
   }
 
-  if (!is.null(source) && !is.null(error$location) &&
-      identical(basename(source), sub(":.*$", "", error$location))) {
+  if (
+    !is.null(source) &&
+      !is.null(error$location) &&
+      identical(basename(source), sub(":.*$", "", error$location))
+  ) {
     error$location <- paste0(dirname(source), "/", error$location)
   } else if (is.null(error$location) && !is.null(source)) {
     error$location <- source
@@ -170,10 +184,13 @@ enrich_build_error <- function(error, warnings = character(), changed = characte
 
   path <- warning_file_path(warnings)
   connection_text <- paste(
-    unlist(error[c("summary", "cause", "details")]), collapse = "\n"
+    unlist(error[c("summary", "cause", "details")]),
+    collapse = "\n"
   )
   connection_error <- grepl(
-    "cannot open the connection", connection_text, fixed = TRUE
+    "cannot open the connection",
+    connection_text,
+    fixed = TRUE
   )
   if (is.null(path) && connection_error) {
     path <- literal_connection_path(error$excerpt)
@@ -184,7 +201,8 @@ enrich_build_error <- function(error, warnings = character(), changed = characte
       error$cause <- specific[[length(specific)]]
     } else {
       error$cause <- sprintf(
-        "cannot open the connection while opening `%s`", path
+        "cannot open the connection while opening `%s`",
+        path
       )
     }
     if (!is.null(error$details)) {
@@ -199,7 +217,8 @@ enrich_build_error <- function(error, warnings = character(), changed = characte
     if (!is.null(path) && !is.null(source) && !fs::is_absolute_path(path)) {
       error$hint <- sprintf(
         "Check that `%s` exists and is resolved correctly from `%s`.",
-        path, source
+        path,
+        source
       )
     } else if (!is.null(path)) {
       error$hint <- sprintf("Check that `%s` exists and is readable.", path)
@@ -210,8 +229,10 @@ enrich_build_error <- function(error, warnings = character(), changed = characte
       )
     }
   }
-  if (grepl("^Invalid R syntax in ", error$summary) &&
-      is.null(error$hint)) {
+  if (
+    grepl("^Invalid R syntax in ", error$summary) &&
+      is.null(error$hint)
+  ) {
     error$hint <- "Fix the highlighted expression and save the R file again."
   }
   error
@@ -235,13 +256,18 @@ condition_diagnostic_context <- function(condition, root = NULL) {
 
 build_error_record <- function(condition, root = NULL) {
   diagnostic <- diagnostic_from_text(
-    conditionMessage(condition), root, condition$parent
+    conditionMessage(condition),
+    root,
+    condition$parent
   )
-  c(diagnostic, list(
-    context = condition_diagnostic_context(condition, root),
-    time = Sys.time(),
-    class = class(condition)
-  ))
+  c(
+    diagnostic,
+    list(
+      context = condition_diagnostic_context(condition, root),
+      time = Sys.time(),
+      class = class(condition)
+    )
+  )
 }
 
 build_error_record_text <- function(text, root = NULL, class = "error") {
@@ -267,7 +293,10 @@ build_error_payload <- function(error, root = NULL) {
 
 clean_build_warnings <- function(warnings, root = NULL) {
   warnings <- vapply(
-    warnings, clean_diagnostic_text, character(1), root = root
+    warnings,
+    clean_diagnostic_text,
+    character(1),
+    root = root
   )
   unique(warnings[nzchar(warnings)])
 }
@@ -352,8 +381,11 @@ build_warning_record <- function(warning, root = NULL, changed = character()) {
       summary = "Vignette titles do not match",
       location = source$location,
       cause = paste0(
-        "\\VignetteIndexEntry{} is \"", pieces[[2L]],
-        "\"; the YAML title is \"", pieces[[3L]], "\"."
+        "\\VignetteIndexEntry{} is \"",
+        pieces[[2L]],
+        "\"; the YAML title is \"",
+        pieces[[3L]],
+        "\"."
       ),
       details = NULL,
       hint = paste0(
@@ -366,7 +398,8 @@ build_warning_record <- function(warning, root = NULL, changed = character()) {
   lines <- strsplit(text, "\n", fixed = TRUE)[[1L]]
   lines <- lines[nzchar(trimws(lines))]
   summary <- if (length(lines)) lines[[1L]] else "Build warning"
-  details <- if (length(lines) > 1L) paste(lines[-1L], collapse = "\n") else NULL
+  details <- if (length(lines) > 1L) paste(lines[-1L], collapse = "\n") else
+    NULL
   if (nchar(summary, type = "width") > 120L) {
     details <- text
     summary <- "Build warning"
@@ -381,26 +414,37 @@ build_warning_record <- function(warning, root = NULL, changed = character()) {
   )
 }
 
-build_warning_payload <- function(warnings, root = NULL, changed = character()) {
+build_warning_payload <- function(
+  warnings,
+  root = NULL,
+  changed = character()
+) {
   warnings <- clean_build_warnings(warnings, root)
   unname(lapply(
-    warnings, build_warning_record, root = root, changed = changed
+    warnings,
+    build_warning_record,
+    root = root,
+    changed = changed
   ))
 }
 
 emit_source_excerpt <- function(excerpt) {
   if (is.null(excerpt) || !nzchar(excerpt)) return(invisible(NULL))
   lines <- strsplit(excerpt, "\n", fixed = TRUE)[[1L]]
-  lines <- vapply(lines, function(line) {
-    match <- regexec(
-      "^([[:space:]]*[0-9]+)([[:space:]]*[|][[:space:]]*)(.*)$",
-      line,
-      perl = TRUE
-    )
-    pieces <- regmatches(line, match)[[1L]]
-    if (length(pieces) != 4L) return(line)
-    paste0(cli::col_silver(paste0(pieces[[2L]], pieces[[3L]])), pieces[[4L]])
-  }, character(1))
+  lines <- vapply(
+    lines,
+    function(line) {
+      match <- regexec(
+        "^([[:space:]]*[0-9]+)([[:space:]]*[|][[:space:]]*)(.*)$",
+        line,
+        perl = TRUE
+      )
+      pieces <- regmatches(line, match)[[1L]]
+      if (length(pieces) != 4L) return(line)
+      paste0(cli::col_silver(paste0(pieces[[2L]], pieces[[3L]])), pieces[[4L]])
+    },
+    character(1)
+  )
   source_label <- cli::style_bold("Source:")
   cli::cli_bullets(c(`>` = "{source_label}"), .envir = environment())
   cli::cli_verbatim(paste0("  ", lines))
@@ -444,8 +488,13 @@ emit_build_error <- function(error, asynchronous = FALSE) {
   invisible(NULL)
 }
 
-emit_build_warnings <- function(warnings, asynchronous = FALSE, root = NULL,
-                                changed = character(), failed = FALSE) {
+emit_build_warnings <- function(
+  warnings,
+  asynchronous = FALSE,
+  root = NULL,
+  changed = character(),
+  failed = FALSE
+) {
   warnings <- build_warning_payload(warnings, root, changed)
   if (!length(warnings)) return(invisible(NULL))
   count <- length(warnings)
