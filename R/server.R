@@ -387,7 +387,7 @@ safe_site_file <- function(site_dir, request_path) {
   decoded <- safe_site_request_path(request_path)
   if (is.null(decoded)) return(NULL)
   candidate <- fs::path(site_dir, decoded)
-  if (fs::dir_exists(candidate)) candidate <- fs::path(candidate, "index.html")
+  if (dir.exists(candidate)) candidate <- fs::path(candidate, "index.html")
   if (!fs::file_exists(candidate)) return(NULL)
   actual <- as.character(fs::path_real(candidate))
   root <- as.character(fs::path_real(site_dir))
@@ -605,7 +605,7 @@ preview_app <- function(state) {
     directory <- !is.null(decoded) &&
       if (is.null(file)) {
         !nzchar(fs::path_ext(decoded)) || endsWith(decoded, "/")
-      } else fs::dir_exists(fs::path(state$site_dir, decoded))
+      } else dir.exists(fs::path(state$site_dir, decoded))
     # Canonicalize directories even before their indexes are built, so loading
     # pages recover and relative links have the same base after publication.
     if (directory && !identical(path, preview_directory_location(decoded))) {

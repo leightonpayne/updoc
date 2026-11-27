@@ -302,7 +302,7 @@ clean_build_warnings <- function(warnings, root = NULL) {
 }
 
 vignette_title_source <- function(root, location, index_title, yaml_title) {
-  if (is.null(root) || !fs::dir_exists(fs::path(root, "vignettes"))) {
+  if (is.null(root) || !dir.exists(fs::path(root, "vignettes"))) {
     return(list(location = location, excerpt = NULL))
   }
 

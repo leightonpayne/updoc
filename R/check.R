@@ -56,7 +56,7 @@ check <- function(
   effective_quiet <- isTRUE(quiet) || json_mode
   check_dir <- tempfile(sprintf("updoc-check-%s-", basename(root)))
   fs::dir_create(check_dir)
-  on.exit(if (fs::dir_exists(check_dir)) fs::dir_delete(check_dir), add = TRUE)
+  on.exit(if (dir.exists(check_dir)) fs::dir_delete(check_dir), add = TRUE)
 
   source_site_dir <- resolve_site_dir(root)
   build_root <- fs::path(check_dir, "package")

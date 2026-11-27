@@ -231,3 +231,370 @@ test_that("relative nested preview directories remain valid", {
   fs::dir_create(expected)
   expect_identical(checked_preview_output_dir(state, pkg), expected)
 })
+
+test_that("mirroring and syncing handle chained, broken, and cyclic symlinks safely", {
+  root <- make_package()
+  mirror <- tempfile("updoc-mirror-symlinks-")
+  external <- tempfile("updoc-symlink-external-")
+  on.exit(unlink(c(root, mirror, external), recursive = TRUE), add = TRUE)
+
+  dir.create(file.path(external, "target_dir", "nested"), recursive = TRUE)
+  ext_file <- file.path(external, "target.txt")
+  ext_nested <- file.path(external, "target_dir", "nested", "data.txt")
+  writeLines("chained file content", ext_file)
+  writeLines("chained dir content", ext_nested)
+  old_time <- as.POSIXct(Sys.time() - 300, tz = "UTC")
+  Sys.setFileTime(ext_file, old_time)
+  Sys.setFileTime(ext_nested, old_time)
+
+  extdata <- file.path(root, "inst", "extdata")
+  dir.create(file.path(extdata, "sub"), recursive = TRUE)
+  dir.create(file.path(extdata, "cycle_a"), recursive = TRUE)
+  dir.create(file.path(extdata, "cycle_b"), recursive = TRUE)
+  writeLines("in cycle a", file.path(extdata, "cycle_a", "a.txt"))
+  writeLines("in cycle b", file.path(extdata, "cycle_b", "b.txt"))
+
+  # Chained file symlink: file_chain2 -> file_chain1 -> ext_file
+  ok <- suppressWarnings(file.symlink(
+    ext_file,
+    file.path(extdata, "file_chain1")
+  ))
+  skip_if_not(ok, "Creating symlinks is unavailable")
+  expect_true(file.symlink("file_chain1", file.path(extdata, "file_chain2")))
+
+  # Chained directory symlink: dir_chain2 -> dir_chain1 -> external/target_dir
+  expect_true(file.symlink(
+    file.path(external, "target_dir"),
+    file.path(extdata, "dir_chain1")
+  ))
+  expect_true(file.symlink("dir_chain1", file.path(extdata, "dir_chain2")))
+
+  # Broken symlinks (single and chained)
+  expect_true(file.symlink(
+    file.path(external, "does-not-exist"),
+    file.path(extdata, "broken1")
+  ))
+  expect_true(file.symlink("broken1", file.path(extdata, "broken2")))
+
+  # Direct and mutual symlink loops
+  expect_true(file.symlink("self_loop", file.path(extdata, "self_loop")))
+  expect_true(file.symlink("loop_b", file.path(extdata, "loop_a")))
+  expect_true(file.symlink("loop_a", file.path(extdata, "loop_b")))
+
+  # Directory cycles (parent, root, and mutual)
+  expect_true(file.symlink("..", file.path(extdata, "sub", "to_parent")))
+  expect_true(file.symlink(root, file.path(extdata, "sub", "to_root")))
+  expect_true(file.symlink("../cycle_b", file.path(extdata, "cycle_a", "to_b")))
+  expect_true(file.symlink("../cycle_a", file.path(extdata, "cycle_b", "to_a")))
+
+  mirror_package(root, mirror)
+
+  copied_file <- file.path(mirror, "inst", "extdata", "file_chain2")
+  copied_dir_file <- file.path(
+    mirror,
+    "inst",
+    "extdata",
+    "dir_chain2",
+    "nested",
+    "data.txt"
+  )
+  expect_true(file.exists(copied_file))
+  expect_false(fs::is_link(copied_file))
+  expect_identical(readLines(copied_file), "chained file content")
+  expect_true(
+    abs(
+      as.numeric(file.info(copied_file)$mtime) -
+        as.numeric(file.info(ext_file)$mtime)
+    ) <
+      2
+  )
+
+  expect_true(file.exists(copied_dir_file))
+  expect_identical(readLines(copied_dir_file), "chained dir content")
+  expect_true(
+    abs(
+      as.numeric(file.info(copied_dir_file)$mtime) -
+        as.numeric(file.info(ext_nested)$mtime)
+    ) <
+      2
+  )
+
+  # Broken symlinks and loops are skipped without failing or hanging.
+  expect_false(file.exists(file.path(mirror, "inst", "extdata", "broken1")))
+  expect_false(file.exists(file.path(mirror, "inst", "extdata", "broken2")))
+  expect_false(file.exists(file.path(mirror, "inst", "extdata", "self_loop")))
+  expect_false(file.exists(file.path(mirror, "inst", "extdata", "loop_a")))
+  expect_false(dir.exists(file.path(
+    mirror,
+    "inst",
+    "extdata",
+    "sub",
+    "to_parent"
+  )))
+  expect_false(dir.exists(file.path(
+    mirror,
+    "inst",
+    "extdata",
+    "sub",
+    "to_root"
+  )))
+  expect_true(file.exists(file.path(
+    mirror,
+    "inst",
+    "extdata",
+    "cycle_a",
+    "a.txt"
+  )))
+  expect_true(file.exists(file.path(
+    mirror,
+    "inst",
+    "extdata",
+    "cycle_b",
+    "b.txt"
+  )))
+  expect_false(dir.exists(
+    file.path(mirror, "inst", "extdata", "cycle_a", "to_b", "to_a")
+  ))
+
+  # sync_package_changes() also handles chained file/dir links and broken links.
+  writeLines("updated chained content", ext_file)
+  sync_package_changes(
+    root,
+    mirror,
+    c(
+      file.path(extdata, "file_chain2"),
+      file.path(extdata, "dir_chain2"),
+      file.path(extdata, "broken2"),
+      file.path(extdata, "loop_a")
+    )
+  )
+  expect_identical(readLines(copied_file), "updated chained content")
+
+  unlink(ext_file)
+  sync_package_changes(root, mirror, file.path(extdata, "file_chain2"))
+  expect_false(file.exists(copied_file))
+})
+
+test_that("mirroring honors .Rbuildignore and .venv while preserving pkgdown sources", {
+  root <- make_package()
+  mirror <- tempfile("updoc-mirror-ignore-")
+  on.exit(unlink(c(root, mirror), recursive = TRUE), add = TRUE)
+
+  writeLines(
+    c(
+      "^_pkgdown\\.yml$",
+      "^_pkgdown\\.yaml$",
+      "^pkgdown$",
+      "^vignettes/articles$",
+      "^README\\.Rmd$",
+      "^README\\.md$",
+      "^index\\.md$",
+      "^NEWS\\.md$",
+      "^CONTRIBUTING\\.md$",
+      "^LICENSE\\.md$",
+      "^CODE_OF_CONDUCT\\.md$",
+      "^SUPPORT\\.md$",
+      "^\\.github$",
+      "^src/.*\\.so$",
+      "^benchmarks$",
+      "^codebase-docs$",
+      "^vendor($|/)",
+      "^tools/vendor-build$",
+      "^tools/slash-only/",
+      "^cran-comments\\.md$",
+      "[unclosed-invalid-regex"
+    ),
+    file.path(root, ".Rbuildignore")
+  )
+
+  # Pkgdown/docs/package files listed in .Rbuildignore must still be mirrored.
+  writeLines("url: https://example.test", file.path(root, "_pkgdown.yml"))
+  writeLines("title: fixture", file.path(root, "README.Rmd"))
+  writeLines("# README", file.path(root, "README.md"))
+  writeLines("# Home", file.path(root, "index.md"))
+  writeLines("# fixture 0.1.0", file.path(root, "NEWS.md"))
+  writeLines("How to contribute", file.path(root, "CONTRIBUTING.md"))
+  writeLines("MIT License", file.path(root, "LICENSE.md"))
+  writeLines("Be kind", file.path(root, "CODE_OF_CONDUCT.md"))
+  writeLines("Get help", file.path(root, "SUPPORT.md"))
+  writeLines("CRAN notes", file.path(root, "cran-comments.md"))
+  dir.create(file.path(root, "pkgdown", "assets"), recursive = TRUE)
+  writeLines("body {}", file.path(root, "pkgdown", "extra.css"))
+  writeLines("asset", file.path(root, "pkgdown", "assets", "app.js"))
+  dir.create(file.path(root, "vignettes", "articles"), recursive = TRUE)
+  writeLines(
+    "---\ntitle: Guide\n---",
+    file.path(root, "vignettes", "articles", "guide.Rmd")
+  )
+  dir.create(file.path(root, "src"))
+  writeLines("binary", file.path(root, "src", "fixture.so"))
+  dir.create(file.path(root, ".github", "workflows"), recursive = TRUE)
+  writeLines(
+    "GitHub contributing",
+    file.path(root, ".github", "CONTRIBUTING.md")
+  )
+  writeLines("name: ci", file.path(root, ".github", "workflows", "ci.yaml"))
+
+  # Excluded repo junk and virtualenvs
+  dir.create(file.path(root, "benchmarks", "data"), recursive = TRUE)
+  writeLines("big", file.path(root, "benchmarks", "data", "run.csv"))
+  dir.create(file.path(root, "codebase-docs", ".venv", "bin"), recursive = TRUE)
+  writeLines("py", file.path(root, "codebase-docs", ".venv", "bin", "python"))
+  dir.create(file.path(root, "vendor", "lib"), recursive = TRUE)
+  writeLines("vendor", file.path(root, "vendor", "lib", "vendored.c"))
+  dir.create(file.path(root, "tools", "vendor-build"), recursive = TRUE)
+  writeLines("build", file.path(root, "tools", "vendor-build", "out.o"))
+  dir.create(file.path(root, "tools", "slash-only"), recursive = TRUE)
+  writeLines("ignored", file.path(root, "tools", "slash-only", "tmp.txt"))
+  dir.create(file.path(root, "tools", "vendor"), recursive = TRUE)
+  writeLines("keep", file.path(root, "tools", "vendor", "sources.tar.xz"))
+
+  # Hard-excluded .venv / venv even without .Rbuildignore or under protected dirs
+  dir.create(file.path(root, "scripts", ".venv", "bin"), recursive = TRUE)
+  writeLines("py", file.path(root, "scripts", ".venv", "bin", "python"))
+  dir.create(file.path(root, "scripts", "venv", "bin"), recursive = TRUE)
+  writeLines("py", file.path(root, "scripts", "venv", "bin", "python"))
+  writeLines("ok", file.path(root, "scripts", "run.R"))
+  dir.create(file.path(root, "vignettes", ".venv", "bin"), recursive = TRUE)
+  writeLines("py", file.path(root, "vignettes", ".venv", "bin", "python"))
+
+  # Site output under a protected directory must still be hard-excluded.
+  site_dir <- file.path(root, "inst", "site")
+  dir.create(site_dir, recursive = TRUE)
+  writeLines("<h1>site</h1>", file.path(site_dir, "index.html"))
+
+  mirror_package(root, mirror, site_dir)
+
+  # Protected pkgdown/package files are present.
+  expect_true(file.exists(file.path(mirror, "_pkgdown.yml")))
+  expect_true(file.exists(file.path(mirror, "README.Rmd")))
+  expect_true(file.exists(file.path(mirror, "README.md")))
+  expect_true(file.exists(file.path(mirror, "index.md")))
+  expect_true(file.exists(file.path(mirror, "NEWS.md")))
+  expect_true(file.exists(file.path(mirror, "CONTRIBUTING.md")))
+  expect_true(file.exists(file.path(mirror, "LICENSE.md")))
+  expect_true(file.exists(file.path(mirror, "CODE_OF_CONDUCT.md")))
+  expect_true(file.exists(file.path(mirror, "SUPPORT.md")))
+  expect_true(file.exists(file.path(mirror, "pkgdown", "extra.css")))
+  expect_true(file.exists(file.path(mirror, "pkgdown", "assets", "app.js")))
+  expect_true(file.exists(file.path(
+    mirror,
+    "vignettes",
+    "articles",
+    "guide.Rmd"
+  )))
+  expect_true(file.exists(file.path(mirror, "src", "fixture.so")))
+  expect_true(file.exists(file.path(mirror, ".github", "CONTRIBUTING.md")))
+  expect_true(file.exists(file.path(
+    mirror,
+    "tools",
+    "vendor",
+    "sources.tar.xz"
+  )))
+  expect_true(file.exists(file.path(mirror, "scripts", "run.R")))
+
+  # Ignored repo junk, workflows, virtualenvs, and site_dir are excluded.
+  expect_false(file.exists(file.path(mirror, "cran-comments.md")))
+  expect_false(dir.exists(file.path(mirror, ".github", "workflows")))
+  expect_false(dir.exists(file.path(mirror, "benchmarks")))
+  expect_false(dir.exists(file.path(mirror, "codebase-docs")))
+  expect_false(dir.exists(file.path(mirror, "vendor")))
+  expect_false(dir.exists(file.path(mirror, "tools", "vendor-build")))
+  expect_false(dir.exists(file.path(mirror, "tools", "slash-only")))
+  expect_false(dir.exists(file.path(mirror, "scripts", ".venv")))
+  expect_false(dir.exists(file.path(mirror, "scripts", "venv")))
+  expect_false(dir.exists(file.path(mirror, "vignettes", ".venv")))
+  expect_false(dir.exists(file.path(mirror, "inst", "site")))
+
+  # Direct is_excluded_path() checks match mirroring behavior.
+  expect_false(is_excluded_path(
+    file.path(root, "_pkgdown.yml"),
+    root,
+    site_dir
+  ))
+  expect_false(is_excluded_path(
+    file.path(root, "vignettes", "articles", "guide.Rmd"),
+    root,
+    site_dir
+  ))
+  expect_false(is_excluded_path(
+    file.path(root, ".github", "CONTRIBUTING.md"),
+    root,
+    site_dir
+  ))
+  expect_true(is_excluded_path(
+    file.path(root, ".github", "workflows", "ci.yaml"),
+    root,
+    site_dir
+  ))
+  expect_true(is_excluded_path(
+    file.path(root, "benchmarks", "data", "run.csv"),
+    root,
+    site_dir
+  ))
+  expect_true(is_excluded_path(
+    file.path(root, "scripts", ".venv", "bin", "python"),
+    root,
+    site_dir
+  ))
+  expect_true(is_excluded_path(
+    file.path(site_dir, "index.html"),
+    root,
+    site_dir
+  ))
+})
+
+test_that("mirroring and syncing preserve mtimes so compiled packages avoid spurious rebuilds", {
+  skip_if_not_installed("pkgbuild")
+  root <- make_package()
+  mirror <- tempfile("updoc-mirror-mtime-")
+  on.exit(unlink(c(root, mirror), recursive = TRUE), add = TRUE)
+
+  dir.create(file.path(root, "src"), recursive = TRUE)
+  dir.create(file.path(root, "inst", "include"), recursive = TRUE)
+  src_before <- file.path(root, "src", "alpha.c")
+  dll <- file.path(root, "src", paste0("fixture", .Platform$dynlib.ext))
+  src_after <- file.path(root, "src", "zeta.c")
+  src_header <- file.path(root, "src", "zeta.h")
+  inst_header <- file.path(root, "inst", "include", "zeta.h")
+
+  writeLines("int alpha(void) { return 1; }", src_before)
+  writeLines("compiled shared library placeholder", dll)
+  writeLines("int zeta(void) { return 2; }", src_after)
+  writeLines("int zeta(void);", src_header)
+  writeLines("int inst_zeta(void);", inst_header)
+
+  now <- Sys.time()
+  src_time <- now - 120
+  dll_time <- now - 60
+  for (path in c(src_before, src_after, src_header, inst_header)) {
+    Sys.setFileTime(path, src_time)
+  }
+  Sys.setFileTime(dll, dll_time)
+
+  expect_false(pkgbuild::needs_compile(root))
+
+  mirror_package(root, mirror)
+
+  mirror_dll <- file.path(mirror, "src", basename(dll))
+  mirror_after <- file.path(mirror, "src", "zeta.c")
+  mirror_inst_header <- file.path(mirror, "inst", "include", "zeta.h")
+  expect_true(file.info(mirror_dll)$mtime > file.info(mirror_after)$mtime)
+  expect_true(file.info(mirror_dll)$mtime > file.info(mirror_inst_header)$mtime)
+  expect_false(pkgbuild::needs_compile(mirror))
+
+  # Full reconciliation sync (as used on <initial>/<rebuild>) also preserves mtimes.
+  snapshot <- source_snapshot(root)
+  sync_paths <- package_sync_paths(root, mirror, snapshot)
+  sync_package_changes(root, mirror, sync_paths)
+  expect_false(pkgbuild::needs_compile(mirror))
+
+  # Editing a C source file flips needs_compile() to TRUE in the mirror.
+  writeLines("int zeta(void) { return 3; }", src_after)
+  Sys.setFileTime(src_after, now)
+  updated_snapshot <- source_snapshot(root)
+  changed <- snapshot_changes(snapshot, updated_snapshot)
+  expect_true(src_after %in% changed)
+  sync_package_changes(root, mirror, changed)
+  expect_true(pkgbuild::needs_compile(mirror))
+})
