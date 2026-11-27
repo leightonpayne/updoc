@@ -30,11 +30,28 @@ build checks for `pkgdown` sites.
 - **Keep `R CMD check --as-cran` clean** (0 errors, 0 warnings; only the expected "New submission" note).
 - **Preserve licenses and notices** in `inst/COPYRIGHTS` and `tools/vendor/flexokidown/`.
 
+## Pull request workflow
+
+- **Work on a branch or worktree and open a pull request against `main`.** Do not push directly to `main`.
+- **Use Conventional Commit PR titles** (`feat:`, `fix:`, `docs:`, `style:`, `ci:`, `chore:`); PRs are squash-merged with the PR title.
+- **Format R code with Air (`air format .`)** using `air.toml`, and keep bulk formatting-only changes out of feature/fix PRs.
+- **Update `NEWS.md` for user-facing changes** (under `# updoc (development version)` between releases).
+- **Check `git diff` before opening a PR** for stray generated files (such as `docs/`, unintended `man/` edits, or unnecessary `Config/roxygen2/version` churn in `DESCRIPTION`) and list the exact verification commands you ran in the PR description.
+- **Required CI checks:** `All checks passed` (Air formatting, browser tests, generated asset check, Chromium rendering QA, roxygen drift check, and all non-`devel` `R CMD check --as-cran` matrix jobs) and `Build and check documentation` (`pkgdown`).
+
 ## Verification commands
 
 Run from the repository root:
 
 ```sh
+./tools/check-pr.sh        # fast pre-PR checks
+./tools/check-pr.sh --full # full suite including integration tests and R CMD check --as-cran
+```
+
+Or run individual checks directly:
+
+```sh
+air format --check .
 Rscript -e 'roxygen2::roxygenise()'
 node --test tests/browser/*.test.cjs
 node tools/generate-doc-assets.cjs --check
