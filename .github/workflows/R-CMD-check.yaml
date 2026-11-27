@@ -41,18 +41,19 @@ jobs:
   check:
     name: ${{ matrix.config.os }} (R ${{ matrix.config.r }}, Pandoc ${{ matrix.config.pandoc || '3.10.2' }})
     runs-on: ${{ matrix.config.os }}
+    continue-on-error: ${{ matrix.config.allow_failure == true }}
     timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
         config:
-          - {os: ubuntu-latest, r: 'release', integration: 'true'}
+          - {os: ubuntu-latest, r: 'release', integration: 'true', roxygen_check: true}
           - {os: ubuntu-latest, r: 'release', pandoc: '3.11', integration: 'true'}
           - {os: macos-latest, r: 'release', integration: 'true'}
           - {os: windows-latest, r: 'release', integration: 'true'}
           - {os: ubuntu-22.04, r: '4.1.0', pandoc: '2.10.1', integration: 'true', minimum: true}
           - {os: ubuntu-latest, r: 'oldrel-1'}
-          - {os: ubuntu-latest, r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-latest, r: 'devel', http-user-agent: 'release', allow_failure: true}
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: 'yes'
@@ -94,9 +95,35 @@ jobs:
           pandoc <- rmarkdown::find_pandoc(cache = FALSE)
           stopifnot(pandoc$version == numeric_version(Sys.getenv("EXPECTED_PANDOC")))
           message("Using Pandoc ", pandoc$version, " from ", pandoc$dir)
+      - name: Verify roxygen2 outputs are up to date
+        if: matrix.config.roxygen_check
+        shell: bash
+        run: |
+          Rscript -e 'roxygen2::roxygenise()'
+          git diff --exit-code -- man/ NAMESPACE
+          git checkout -- DESCRIPTION
       - uses: r-lib/actions/check-r-package@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2
         with:
           args: 'c("--no-manual", "--as-cran")'
           build_args: '"--no-manual"'
           error-on: '"warning"'
           upload-results: 'true'
+
+  all-checks:
+    name: All checks passed
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [browser, check]
+    if: always()
+    steps:
+      - name: Verify required jobs succeeded
+        shell: bash
+        env:
+          BROWSER_RESULT: ${{ needs.browser.result }}
+          CHECK_RESULT: ${{ needs.check.result }}
+        run: |
+          echo "browser: $BROWSER_RESULT"
+          echo "check:   $CHECK_RESULT"
+          if [ "$BROWSER_RESULT" != "success" ] || [ "$CHECK_RESULT" != "success" ]; then
+            exit 1
+          fi

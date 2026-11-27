@@ -13,3 +13,5 @@
 ^pkgdown$
 ^vignettes/articles$
 ^LICENSE\.md$
+^air\.toml$
+^\.git-blame-ignore-revs$
